@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>{{ object.title }}</h1>
+<p>{{ object.description }}</p>
+<p>Category: {{ object.category }}</p>
+<img src="{{ object.image.url }}" alt="{{ object.title }}" style="max-width:100%;">
+<p>Posted on: {{ object.date_and_time }}</p>
+<p>Author: {{ object.user.username }}</p>
+
+{% if object.anonymous %}
+    <p>The author has chosen to remain anonymous.</p>
+{% else %}
+    <p>Written by: {{ object.user.get_full_name }}</p>
+{% endif %}
+
+</body>
+</html>

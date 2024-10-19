@@ -24,9 +24,9 @@ from django.http import JsonResponse, HttpResponse, Http404
 from django.shortcuts import redirect, render, get_object_or_404
 from django.views.generic import ListView, TemplateView, DetailView
 
-from codestuff.forms import UserCreateForm, EmailForm, CommunityForm, ProfileForm, PersonalProfileForm, \
+from .forms import UserCreateForm, EmailForm, CommunityForm, ProfileForm, PersonalProfileForm, \
     InternProfileForm, SupportEmailForm, RSVPForm, FriendRequestForm
-from codestuff.models import Room, Message, Profile, Community
+from .models import Room, Message, Profile, Community
 
 
 from django.views.decorators.http import require_http_methods
@@ -287,7 +287,7 @@ def login_user(request):
 class CreateCommunityView(LoginRequiredMixin, View):
     def get(self, request):
         form = CommunityForm()
-        return render(request, 'codestuff/create_community.html', {'form': form})
+        return render(request, 'create_community.html', {'form': form})
 
     def post(self, request):
         form = CommunityForm(request.POST, request.FILES)  # Handle file upload
@@ -297,13 +297,13 @@ class CreateCommunityView(LoginRequiredMixin, View):
             community.created_by = request.user  # Set created_by to the current user
             community.save()
             return redirect('community', pk=community.pk)  # Redirect to the community detail page
-        return render(request, 'codestuff/create_community.html', {'form': form})
+        return render(request, 'create_community.html', {'form': form})
 
 
 class UserCommunitiesView(LoginRequiredMixin, View):
     def get(self, request):
         communities = request.user.communities_joined.all()  # Get communities the user is a member of
-        return render(request, 'codestuff/user_communities.html', {'communities': communities})
+        return render(request, 'user_communities.html', {'communities': communities})
 
 
 class FriendView(ListView):
@@ -769,22 +769,18 @@ class NewsView(ListView):
 
 class SingleNewsView(DetailView):
     model = NewsLetter
-    paginate_by = 10
     template_name = "singlenews.html"
 
     def get_object(self):
-        slug = self.kwargs.get("slug")  # Get slug from URL parameters
-        if slug:
-            return get_object_or_404(NewsLetter, slug=slug)  # Retrieve profile or raise 404 for invalid slug
-        return None  # Handle case where no slug is provided (optional
+        slug = self.kwargs.get("slug")
+        return get_object_or_404(NewsLetter, slug=slug)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['News'] = NewsLetter.objects.all()
 
+        # Only include active profiles
         newprofile = NewsLetter.objects.filter(is_active=1)
-        # Retrieve the author's profile avatar
-
         context['Profiles'] = newprofile
 
         for newprofile in context['Profiles']:
@@ -795,6 +791,7 @@ class SingleNewsView(DetailView):
                 newprofile.newprofile_profile_url = newprofile.get_profile_url()
 
         return context
+
 
 
 # views.py

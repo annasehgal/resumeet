@@ -113,7 +113,7 @@ class Profile(models.Model):
     email = models.EmailField(blank=True, null=True)
     # username = models.OneToOneField(User, on_delete=models.CASCADE)
     avatar = models.ImageField(upload_to='media', null=True, blank=True, verbose_name="Profile picture")
-    alternate = models.TextField(verbose_name="Alternate text")
+    alternate = models.TextField(verbose_name="Alternate text", blank=True, null=True)
     about_me = models.TextField(blank=True, null=True)
     keywords = models.ManyToManyField(Keywords)
     opt_in = models.BooleanField(default=False)
@@ -142,6 +142,8 @@ class Profile(models.Model):
     def save(self, *args, **kwargs):
         if not self.username:
             self.username = self.user.username
+
+        super().save(*args, **kwargs)
 
     def get_profile_url(self):
         profile = Profile.objects.filter(user=self.user).first()
