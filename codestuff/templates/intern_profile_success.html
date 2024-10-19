@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Created</title>
+</head>
+<body>
+    <h1>Profile created successfully!</h1>
+    <p>Your intern profile has been created.</p>
+    <a href="{% url 'profile' username=request.user.username %}">View your profile</a>
+</body>
+</html>

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>RSVP to {{ event.event }}</h2>
+  <p>Hosted by: {{ event.host }}</p>
+  <p>Description: {{ event.description }}</p>
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">RSVP</button>
+  </form>
+{% endblock %}
+
+</body>
+</html>
