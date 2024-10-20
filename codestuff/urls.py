@@ -29,6 +29,7 @@ urlpatterns = [
     path('create-intern-profile/', views.InternProfileCreateView.as_view(), name='create_intern_profile'),
     path('intern-profile-success/', views.TemplateView.as_view(template_name='intern_profile_success.html'), name='intern_profile_success'),
     path('profile/create/', ProfileCreateView.as_view(), name='create_profile'),
+    path('profile/create/<str:username>/', ProfileCreateView.as_view(), name='edit_profile'),
     path('personal-profile/create/', PersonalProfileCreateView.as_view(), name='create_personal_profile'),
     path('intern-profile/create/', InternProfileCreateView.as_view(), name='create_intern_profile'),
     path('notifications/', views.NotificationListView.as_view(), name='notifications'),

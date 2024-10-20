@@ -478,13 +478,29 @@ class ProfileView(DetailView):
 
         return context
 
+
 # Profile Form View
 class ProfileCreateView(CreateView):
     model = Profile
     form_class = ProfileForm
-    template_name = 'profile_form.html'  # Specify your template name
-    success_url = reverse_lazy('profile_success')  # Redirect to a success page or another view
+    template_name = 'profile_form.html'
 
+    def get_success_url(self):
+        # Redirect the user to their profile page after editing or creating their profile
+        return reverse('profile', kwargs={'username': self.request.user.username})
+
+    def form_valid(self, form):
+        # Check if the user already has a profile
+        existing_profile = Profile.objects.filter(user=self.request.user).first()
+        if existing_profile:
+            # Delete the existing profile if found
+            existing_profile.delete()
+
+        # Assign the user to the new profile before saving
+        form.instance.user = self.request.user
+
+        # Save the new profile
+        return super().form_valid(form)
 
 # Personal Profile Form View
 

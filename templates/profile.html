@@ -4,18 +4,156 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ profile.user.username }}'s Profile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --background-color: #ecf0f1;
+            --text-color: #34495e;
+        }
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .profile-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+        }
+        .profile-avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 5px solid white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+        }
+        .profile-username {
+            font-size: 2.5em;
+            margin: 20px 0 10px;
+        }
+        .profile-content {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin-top: -50px;
+        }
+        .profile-section {
+            margin-bottom: 30px;
+        }
+        .profile-section h2 {
+            color: var(--secondary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .profile-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .profile-info p {
+            margin: 10px 0;
+        }
+        .profile-info strong {
+            color: var(--secondary-color);
+        }
+        .profile-about {
+            background-color: #f9f9f9;
+            border-left: 4px solid var(--primary-color);
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .edit-profile {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+        }
+        .edit-profile:hover {
+            background-color: #2980b9;
+        }
+        @media (max-width: 768px) {
+            .profile-info {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-    <img src="{{profile.avatar.url}}">
-    <h1> {{ profile.user.username }}'s Profile </h1>
+    <div class="profile-header">
+        <img src="{{ profile.avatar.url }}" alt="{{ profile.user.username }}'s avatar" class="profile-avatar">
+        <h1 class="profile-username">{{ profile.user.username }}</h1>
+    </div>
 
-    <p><strong>Username:</strong> {{ profile.user.username }}</p>
-    <p><strong>About Me:</strong> {{ profile.about_me }}</p>
-    <p><strong>Joined on:</strong> {{ profile.user.date_joined|date:"F j, Y" }}</p>
-    {% if user_profile %}
-        <p>This is your profile, {{ user_profile.user.username }}.</p>
-    {% endif %}
+    <div class="container">
+        <div class="profile-content">
+            <div class="profile-section">
+                <h2>About Me</h2>
+                <div class="profile-about">
+                    <p>{{ profile.about_me }}</p>
+                </div>
+            </div>
 
-    <!-- Add more fields as needed -->
+            <div class="profile-section">
+                <h2>Profile Information</h2>
+                <div class="profile-info">
+                    <p><strong>Username:</strong> {{ profile.user.username }}</p>
+                    <p><strong>Joined on:</strong> {{ profile.user.date_joined|date:"F j, Y" }}</p>
+                    <!-- Add more fields as needed -->
+                </div>
+            </div>
+
+            {% if user_profile %}
+                <div class="profile-section">
+                    <h2>Personal Section</h2>
+                    <p>This is your profile, {{ user_profile.user.username }}.</p>
+                    <a href="{% url 'edit_profile' user_profile.user.username %}">
+                        <button class="edit-profile">Edit Profile</button>
+                    </a>
+
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const editProfileBtn = document.getElementById('editProfileBtn');
+            if (editProfileBtn) {
+                editProfileBtn.addEventListener('click', function() {
+                    // Here you would typically redirect to an edit profile page
+                    // or open a modal for editing. For this example, we'll just show an alert.
+                    alert('Edit profile functionality would go here!');
+                });
+            }
+
+            // Add a subtle animation to the profile content on page load
+            const profileContent = document.querySelector('.profile-content');
+            profileContent.style.opacity = '0';
+            profileContent.style.transform = 'translateY(20px)';
+            profileContent.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+
+            setTimeout(() => {
+                profileContent.style.opacity = '1';
+                profileContent.style.transform = 'translateY(0)';
+            }, 100);
+        });
+    </script>
 </body>
 </html>

@@ -2,33 +2,159 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-<!-- news_list.html -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>News Feed</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .header {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+        }
+        .news-container {
+            background-color: #fff;
+            border-radius: 0 0 5px 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        .news-item {
+            margin-bottom: 30px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+        .news-item:hover {
+            transform: translateY(-5px);
+        }
+        .news-item h2 {
+            margin-top: 0;
+        }
+        .news-item a {
+            text-decoration: none;
+        }
+        .news-item a:hover {
+            color: #2980b9;
+            text-decoration: underline;
+        }
+        .news-meta {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            margin-bottom: 10px;
+        }
+        .news-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .news-description {
+            margin-bottom: 10px;
+        }
+        .read-more {
+            display: inline-block;
+            background-color: #3498db;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 3px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+        .read-more:hover {
+            background-color: #2980b9;
+        }
+        .no-news {
+            text-align: center;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+        }
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            .header {
+                padding: 15px;
+            }
+            .news-container {
+                padding: 15px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>News Feed</h1>
-    <div>
+    <header class="header">
+        <h1>News Feed</h1>
+    </header>
+    <main class="news-container">
         {% for news in news_list %}
-            <div class="news-item">
-                <h2><a href="{{ news.get_profile_url2 }}">{{ news.title }}</a></h2>  <!-- Link to the news detail view -->
-                <p>By {{ news.user.username }} on {{ news.date_and_time }}</p>
+            <article class="news-item">
+                <h2><a href="{{ news.get_profile_url2 }}">{{ news.title }}</a></h2>
+                <div class="news-meta">
+                    <span>By {{ news.user.username }}</span>
+                    <span>on {{ news.date_and_time }}</span>
+                </div>
                 <img src="{{ news.image.url }}" alt="{{ news.title }}" style="width: {{ news.image_width }}px; height: {{ news.image_length }}px;">
-                <p>{{ news.description|truncatewords:30 }}</p>  <!-- Display a snippet of the news description -->
-                <hr>
-            </div>
+                <p class="news-description">{{ news.description|truncatewords:30 }}</p>
+                <a href="{{ news.get_profile_url2 }}" class="read-more">Read More</a>
+            </article>
         {% empty %}
-            <p>No news available at the moment.</p>
+            <div class="no-news">
+                <p>No news available at the moment.</p>
+            </div>
         {% endfor %}
-    </div>
-</body>
-</html>
+    </main>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Lazy loading images
+            var lazyImages = [].slice.call(document.querySelectorAll("img.news-image"));
+
+            if ("IntersectionObserver" in window) {
+                let lazyImageObserver = new IntersectionObserver(function(entries, observer) {
+                    entries.forEach(function(entry) {
+                        if (entry.isIntersecting) {
+                            let lazyImage = entry.target;
+                            lazyImage.src = lazyImage.dataset.src;
+                            lazyImage.classList.remove("lazy");
+                            lazyImageObserver.unobserve(lazyImage);
+                        }
+                    });
+                });
+
+                lazyImages.forEach(function(lazyImage) {
+                    lazyImageObserver.observe(lazyImage);
+                });
+            }
+
+            // Smooth scroll to top
+            var scrollToTopBtn = document.createElement('button');
+            scrollToTopBtn.innerHTML = '&uarr;';
+            scrollToTopBtn.setAttribute('aria-label', 'Scroll to top');
+            scrollToTopBtn.style.cssText = 'position: fixed; bottom: 20px; right: 20px; display: none; background-color: #3498db; color: white; border: none; border-radius: 50%; width: 50px; height: 50px; font-size: 20px; cursor: pointer;';
+            document.body.appendChild(scrollToTopBtn);
+
+            window.addEventListener('scroll', function() {
+                if (window.pageYOffset > 300) {
+                    scrollToTopBtn.style.display = 'block';
+                } else {
+                    scrollToTopBtn.style.display = 'none';
+                }
+            });
+
+            scrollToTopBtn.addEventListener('click', function() {
+                window.scrollTo({top: 0, behavior: 'smooth'});
+            });
+        });
+    </script>
 </body>
 </html>
