@@ -107,7 +107,6 @@ def validate_dob(value):
         raise ValidationError('Date of birth cannot be in the future.')
 
 
-
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     username = models.CharField(max_length=200, blank=True, null=True)
@@ -162,18 +161,21 @@ class PersonalProfile(models.Model):
     state = models.CharField(max_length=2, choices=STATES)
     major = models.ForeignKey('Major', on_delete=models.CASCADE, blank=True, null=True)
     city = models.CharField(max_length=100)
+    keywords = models.ManyToManyField(Keywords, blank=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='personal_profile')
 
     def save(self, *args, **kwargs):
-        if not self.major and hasattr(self, 'profile'):
-            self.major = self.profile.major
         super().save(*args, **kwargs)
+
+        if not self.keywords.exists() and hasattr(self, 'profile'):
+            self.keywords.set(self.profile.keywords.all())
 
     def __str__(self):
         return f"{self.full_name} - {self.city}, {self.state}"
 
     class Meta:
         verbose_name = "Personal Profile"
+
 
 class InternProfile(models.Model):
     username = models.CharField(max_length=200)

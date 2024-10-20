@@ -487,12 +487,18 @@ class ProfileCreateView(CreateView):
 
 
 # Personal Profile Form View
+
 class PersonalProfileCreateView(CreateView):
     model = PersonalProfile
     form_class = PersonalProfileForm
-    template_name = 'personal_profile_form.html'  # Specify your template name
-    success_url = reverse_lazy('personal_profile_success')  # Redirect after submission
+    template_name = 'personal_profile_form.html'
 
+    def form_valid(self, form):
+        form.instance.user = self.request.user  # Set the user before saving
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return redirect('profile')  # Adjust the redirect to your desired URL
 
 # Intern Profile Form View
 class InternProfileCreateView(CreateView):
@@ -515,14 +521,22 @@ def create_profile(request):
 
 
 # Personal Profile Form View
+@login_required
 def create_personal_profile(request):
+    try:
+        profile = request.user.personal_profile
+    except PersonalProfile.DoesNotExist:
+        profile = None
+
     if request.method == 'POST':
-        form = PersonalProfileForm(request.POST)
+        form = PersonalProfileForm(request.POST, instance=profile)
         if form.is_valid():
-            form.save()
-            return redirect('personal_profile_success')  # Redirect after saving
+            # Save the form which now handles keywords properly
+            profile = form.save()
+            return redirect('find_similar_profiles')
     else:
-        form = PersonalProfileForm()
+        form = PersonalProfileForm(instance=profile)
+
     return render(request, 'personal_profile_form.html', {'form': form})
 
 
@@ -1045,6 +1059,13 @@ def find_similar_profiles(request):
         if user_profile.major == profile.major:
             score += 15  # Higher score for same major
 
+        # Keywords similarity: add 5 points for each matching keyword
+        user_keywords = set(user_profile.keywords.values_list('id', flat=True))
+        profile_keywords = set(profile.keywords.values_list('id', flat=True))
+        keyword_matches = user_keywords.intersection(profile_keywords)
+        score += len(keyword_matches) * 5  # Add 5 points for each match
+
+
         # Add the profile with its score to the list
         scored_profiles.append((profile, score))
 
@@ -1071,3 +1092,5 @@ def calculate_age(date_of_birth):
 def profile_detail(request, pk):
     profile = get_object_or_404(PersonalProfile, pk=pk)
     return render(request, 'soughtprofile.html', {'profile': profile})
+
+

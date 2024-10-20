@@ -47,6 +47,7 @@ urlpatterns = [
     path('intern-profile/<int:pk>/', views.intern_profile_detail, name='intern_profile_detail'),
     path('similar-profiles/', views.find_similar_profiles, name='find_similar_profiles'),
     path('soughtprofile/<int:pk>/', views.profile_detail, name='soughtprofile'),  # Optional detail view
+    path('personal_profile_form/', views.PersonalProfileCreateView.as_view(), name='personal_profile_form'),  # Optional detail view
 
 
     path('friend_request/<int:request_id>/<str:action>/', views.manage_friend_request, name='manage_friend_request'),
