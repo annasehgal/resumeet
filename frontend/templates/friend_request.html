@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{% for request in friend_requests %}
+    <div>
+        <p>{{ request.sender.username }} sent you a friend request.</p>
+        <a href="{% url 'manage_friend_request' request.id 'accept' %}">Accept</a>
+        <a href="{% url 'manage_friend_request' request.id 'decline' %}">Decline</a>
+        <a href="{% url 'manage_friend_request' request.id 'ignore' %}">Ignore</a>
+    </div>
+{% endfor %}
+
+</body>
+</html>

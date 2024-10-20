@@ -1,0 +1,31 @@
+<!-- codestuff/templates/codestuff/user_communities.html -->
+{% extends "base_generic.html" %}  <!-- Use your base template -->
+
+{% block content %}
+
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h2>Your Communities</h2>
+
+{% if communities %}
+    <ul>
+        {% for community in communities %}
+            <li>
+                <h3>{{ community.name }}</h3>
+                <p>{{ community.description }}</p>
+                <p>Created by: {{ community.created_by.username }}</p>
+                <img src="{{ community.logo.url }}" alt="{{ community.name }} logo" style="width: 50px; height: 50px;">
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>You are not a member of any communities yet.</p>
+{% endif %}
+{% endblock %}
+</body>
+</html>

@@ -1,0 +1,25 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h2>Public Communities</h2>
+<ul>
+    {% for community in public_communities %}
+        <li>
+            <a href="{% url 'community_index' community.slug %}">{{ community.name }}</a>
+            <p>{{ community.description }}</p>
+        </li>
+    {% empty %}
+        <li>No public communities available.</li>
+    {% endfor %}
+</ul>
+
+
+
+</body>
+</html>

@@ -1,0 +1,36 @@
+{% extends 'community_index.html' %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+     <title>Messages</title>
+</head>
+<body>
+<h2>Messages for {{ room.name }}</h2>
+<div>
+    {% for message in messages %}
+        <div>
+            <img src="{{ message.avatar_url }}" alt="{{ message.username }}'s avatar" />
+            <strong>{{ message.username }}</strong>: {{ message.value }}
+            <span>{{ message.date }}</span>
+            {% if message.file %}
+                <a href="{{ message.file }}">Download File</a>
+            {% endif %}
+        </div>
+    {% empty %}
+        <p>No messages yet.</p>
+    {% endfor %}
+</div>
+
+<!-- Optional: Form to send a new message -->
+<form method="post">
+    {% csrf_token %}
+    <input type="text" name="value" placeholder="Type your message here..." required>
+    <button type="submit">Send</button>
+</form>
+
+</body>
+</html>
+{% endblock content %}
