@@ -1,0 +1,164 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+*, *:after, *:before {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Inter", sans-serif;
+    line-height: 1.5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: row; /* Change to row for sidebar layout */
+    padding-top: 5vh;
+    padding-bottom: 5vh;
+    background-color: #f2f5f7;
+}
+
+.sidebar-menu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    background-color: #05043e;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: .75rem;
+    border-radius: 10px;
+    box-shadow: 0 10px 50px 0 rgba(5, 4, 62, 0.25);
+    min-width: 200px; /* Fixed width for sidebar */
+}
+
+.sidebar-menu li + li {
+    margin-top: .75rem;
+}
+
+.sidebar-menu a {
+    color: #FFF;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 8px;
+    position: relative;
+    transition: background-color 0.15s ease;
+}
+
+.sidebar-menu a:hover,
+.sidebar-menu a:focus {
+    background-color: #30305a;
+    outline: 0;
+}
+
+.sidebar-menu a span {
+    position: absolute;
+    background-color: #30305a;
+    white-space: nowrap;
+    padding: .5rem 1rem;
+    border-radius: 6px;
+    left: calc(100% + 1.5rem);
+    transform-origin: center left;
+    transform: scale(0);
+    opacity: 0;
+    transition: .15s ease;
+}
+
+.sidebar-menu a:hover span,
+.sidebar-menu a:focus span {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.sidebar-menu i {
+    font-size: 1.375rem;
+}
+
+details {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    margin-top: 2rem;
+    color: #05043e;
+    display: flex;
+    flex-direction: column;
+}
+
+details div {
+    background-color: #fff;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+    padding: 1.25rem;
+    border-radius: 8px;
+    position: absolute;
+    max-height: calc(100vh - 100px);
+    width: 400px;
+    max-width: calc(100vw - 2rem);
+    bottom: calc(100% + 1rem);
+    right: 0;
+    overflow: auto;
+    transform-origin: 100% 100%;
+}
+
+details div::-webkit-scrollbar {
+    width: 15px;
+    background-color: #fff;
+}
+
+details div::-webkit-scrollbar-thumb {
+    width: 5px;
+    border-radius: 99em;
+    background-color: #ccc;
+    border: 5px solid #fff;
+}
+
+details > div > * + * {
+    margin-top: 0.75em;
+}
+
+details summary {
+    display: inline-flex;
+    margin-left: auto;
+    margin-right: auto;
+    justify-content: center;
+    align-items: center;
+    font-weight: 600;
+    padding: 0.625em 1.25em;
+    border-radius: 99em;
+    color: #fff;
+    background-color: #185adb;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: 0.15s ease;
+    position: relative;
+    list-style: none;
+    text-align: center;
+}
+
+details summary:hover,
+details summary:focus {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+details summary i {
+    font-size: 1.375em;
+    margin-left: .25em;
+}
+
+@keyframes scale {
+    0% {
+        transform: scale(0);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+details[open] div {
+    animation: scale 0.25s ease;
+}
+
+.sidebar-menu a i {
+    margin-right: 10px; /* Space between icon and text */
+    font-size: 1.5rem; /* Adjust icon size as needed */
+}

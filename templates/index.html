@@ -1,28 +1,78 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Landing Page</title>
+    <title>Resumeet</title>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            background-image: url("{% if landing_images %}{{ landing_images.0.image.url }}{% else %}{% static 'default_background.jpg' %}{% endif %}");
+            background-size: cover; /* Cover the entire background */
+            background-position: center; /* Center the image */
+            background-repeat: no-repeat; /* Prevent repeating the image */
+        }
+    </style>
 </head>
 <body>
-{% if user.is_authenticated %}
-    <h1>Welcome, {{user.username}}!</h1>
-{% else %}
-<h1>Resumeet</h1>
-{% endif %}
+
+    <!-- Navigation Bar -->
+    <nav>
+        <ul class="sidebar-menu">
+            <li>
+                <a href="#">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <i class="fas fa-compass"></i>
+                    <span>Explore</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <i class="fas fa-comments"></i>
+                    <span>Messages</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Events</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <i class="fas fa-bell"></i>
+                    <span>Notification</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Create Post</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <i class="fas fa-user-circle"></i>
+                    <span>My account</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
 
     <ul>
-        {% for image in landing_images %}
-            <li style="text-decoration: none;">
-                <img src="{{ image.image.url }}" alt="{{ image.name }}">
-            </li>
-        {% empty %}
-            <li>No images available.</li>
-        {% endfor %}
     </ul>
 </body>
 </html>
-
