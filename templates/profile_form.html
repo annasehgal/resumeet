@@ -135,45 +135,32 @@
         </form>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.getElementById('edit-profile-form');
-            const inputs = form.querySelectorAll('input, textarea, select');
+   <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('edit-profile-form');
+        const inputs = form.querySelectorAll('input, textarea, select');
 
-            inputs.forEach(input => {
-                input.addEventListener('focus', function() {
-                    this.parentElement.style.transform = 'translateY(-5px)';
-                    this.parentElement.style.transition = 'transform 0.3s ease';
-                });
-
-                input.addEventListener('blur', function() {
-                    this.parentElement.style.transform = 'translateY(0)';
-                });
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'translateY(-5px)';
+                this.parentElement.style.transition = 'transform 0.3s ease';
             });
 
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-
-                // Add loading state to button
-                const submitButton = form.querySelector('button[type="submit"]');
-                const originalText = submitButton.textContent;
-                submitButton.textContent = 'Saving...';
-                submitButton.disabled = true;
-
-                // Simulate form submission (replace with actual form submission logic)
-                setTimeout(() => {
-                    submitButton.textContent = 'Changes Saved!';
-                    submitButton.style.backgroundColor = '#43a047';
-
-                    // Reset button after 2 seconds
-                    setTimeout(() => {
-                        submitButton.textContent = originalText;
-                        submitButton.style.backgroundColor = '';
-                        submitButton.disabled = false;
-                    }, 2000);
-                }, 1500);
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'translateY(0)';
             });
         });
-    </script>
+
+        // Remove the submit event listener to allow the form to submit as usual
+        form.addEventListener('submit', function(e) {
+            // Optional: You can keep the button animation for visual feedback if needed
+            const submitButton = form.querySelector('button[type="submit"]');
+            const originalText = submitButton.textContent;
+            submitButton.textContent = 'Saving...';
+            submitButton.disabled = true;
+        });
+    });
+</script>
+
 </body>
 </html>
