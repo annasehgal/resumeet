@@ -1,33 +1,174 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-     <title>Messages</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages - {{ room.name }}</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --background-color: #f5f8fa;
+            --text-color: #333333;
+            --light-gray: #ecf0f1;
+            --white: #ffffff;
+            --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .messages {
+            background-color: var(--white);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            padding: 20px;
+            margin-bottom: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .message {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .message-content {
+            flex-grow: 1;
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 5px;
+        }
+
+        .message-username {
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+
+        .message-date {
+            font-size: 0.8em;
+            color: #7f8c8d;
+        }
+
+        .message-text {
+            background-color: var(--light-gray);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 5px;
+        }
+
+        .message-file {
+            font-size: 0.9em;
+        }
+
+        .message-file a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .message-file a:hover {
+            text-decoration: underline;
+        }
+
+        .no-messages {
+            text-align: center;
+            color: #7f8c8d;
+        }
+
+        .message-form {
+            display: flex;
+            gap: 10px;
+        }
+
+        .message-input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid var(--light-gray);
+            border-radius: 4px;
+            font-size: 1em;
+        }
+
+        .message-submit {
+            background-color: var(--primary-color);
+            color: var(--white);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .message-submit:hover {
+            background-color: var(--secondary-color);
+        }
+    </style>
 </head>
 <body>
-<h2>Messages for {{ room.name }}</h2>
-<div>
-    {% for message in messages %}
-        <div>
-            <img src="{{ message.avatar_url }}" alt="{{ message.username }}'s avatar" />
-            <strong>{{ message.username }}</strong>: {{ message.value }}
-            <span>{{ message.date }}</span>
-            {% if message.file %}
-                <a href="{{ message.file }}">Download File</a>
-            {% endif %}
+    <div class="container">
+        <h2>Messages for {{ room.name }}</h2>
+        <div class="messages">
+            {% for message in messages %}
+                <div class="message">
+                    <img class="message-avatar" src="{{ message.avatar_url }}" alt="{{ message.username }}'s avatar" />
+                    <div class="message-content">
+                        <div class="message-header">
+                            <span class="message-username">{{ message.username }}</span>
+                            <span class="message-date">{{ message.date }}</span>
+                        </div>
+                        <div class="message-text">{{ message.value }}</div>
+                        {% if message.file %}
+                            <div class="message-file">
+                                <a href="{{ message.file }}">Download File</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% empty %}
+                <p class="no-messages">No messages yet.</p>
+            {% endfor %}
         </div>
-    {% empty %}
-        <p>No messages yet.</p>
-    {% endfor %}
-</div>
 
-<!-- Optional: Form to send a new message -->
-<form method="post">
-    {% csrf_token %}
-    <input type="text" name="value" placeholder="Type your message here..." required>
-    <button type="submit">Send</button>
-</form>
-
+        <form method="post" class="message-form">
+            {% csrf_token %}
+            <input type="text" name="value" placeholder="Type your message here..." required class="message-input">
+            <button type="submit" class="message-submit">Send</button>
+        </form>
+    </div>
 </body>
 </html>
