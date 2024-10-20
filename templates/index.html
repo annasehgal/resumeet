@@ -8,6 +8,17 @@
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        .hidden-bottom {
+    opacity: 0; /* Hidden initially */
+    transform: translateY(100px); /* Slightly move up */
+    transition: transform 1s, opacity 1s; /* Smooth transition for opacity and transform */
+}
+
+.reveal {
+    opacity: 1; /* Become visible */
+    transform: translateY(0); /* Move to its original position */
+}
+
         body {
             background-image: url("{% if landing_images %}{{ landing_images.0.image.url }}{% else %}{% static 'default_background.jpg' %}{% endif %}");
             background-size: cover; /* Cover the entire background */
@@ -121,15 +132,68 @@
     transition: transform 2s ease-in-out, opacity 1s;
 }
 
+
+          .navbar {
+            border: 2px blue;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(45deg, blue, red);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+            color: white;
+        }
+        .navbar-menu {
+            display: flex;
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar-item {
+            margin-left: 1rem;
+        }
+        .navbar-link {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+        .navbar-link:hover, .navbar-link:focus {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .content {
+            margin-top: 80px; /* Adjust this value based on your navbar height */
+            padding: 1rem;
+        }
     </style>
 
 </head>
 <body>
+<nav class="navbar" role="navigation" aria-label="main navigation">
+        <a href="#" class="navbar-brand">Logo</a>
+        <ul class="navbar-menu">
+            <li class="navbar-item"><a href="#" class="navbar-link">Home</a></li>
+            <li class="navbar-item"><a href="{% url 'profile' str:username %}" class="navbar-link">Profile</a></li>
+            <li class="navbar-item"><a href="#" class="navbar-link">About</a></li>
+            <li class="navbar-item"><a href="#" class="navbar-link">Contact</a></li>
+        </ul>
+    </nav>
 
     <!-- Navigation Bar -->
     <nav style="margin-top: 5%;">
         <ul class="sidebar-menu" style="
-    min-width: 60px; height: 80%;">
+    min-width: 60px; height: 80%; background: rgba(255, 255, 255, 0.1);">
             <li style="">
                 <a href="#">
                     <i class="fas fa-home"></i>
@@ -234,27 +298,34 @@
         }
     });
 });
+document.addEventListener("DOMContentLoaded", function () {
+    const observerOptions = {
+        threshold: 0.1 // Trigger when 10% of the element is visible
+    };
+
+    const revealOnScroll = (entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('reveal');
+                observer.unobserve(entry.target); // Stop observing once revealed
+            }
+        });
+    };
+
+    const observer = new IntersectionObserver(revealOnScroll, observerOptions);
+
+    // Select all the elements to reveal
+    const texts = document.querySelectorAll('.animated-text3, .animated-text4, .animated-text5, .animated-text6');
+
+    texts.forEach(text => {
+        text.classList.add('hidden-bottom'); // Ensure they are hidden initially
+        observer.observe(text); // Start observing each element
+    });
+});
 
     </script>
 
-<h1 class="animated-text3" style="margin-left: auto; margin-right: auto; font-size: 30px; color: rgba(255, 255, 255, 0.7); text-shadow: 2px 2px rgba(0, 0, 0, 0.7); margin-top: 20%; display: flex;">
-    Welcome to ResuMeet! ResuMeet is an advanced system designed to support & connect aspiring high school students & college students alike to the peers they need in order to succeed.
-    Specifically, ResuMeet uses artificial intelligence to bring you the closest peers to you based on a variety of factors.
 
-</h1>
-
-    <h1 class="animated-text4" style="margin-left: auto; margin-right: auto; font-size: 25px; color: rgba(255, 255, 255, 0.7); text-shadow: 2px 2px rgba(0, 0, 0, 0.7); margin-top: 20%; display: flex;">
-    We also offer you the option to create a community full of peers to enhance your job preparation &
-        find what best works for you. The communities do come with creatable roles with a myriad of permissions.
-</h1>
-    <h1 class="animated-text5" style="margin-left: auto; margin-right: auto; font-size: 30px; color: rgba(255, 255, 255, 0.7); text-shadow: 2px 2px rgba(0, 0, 0, 0.7); margin-top: 20%; display: flex;">
-   Especially get along with specific users? ResuMeet allows you the option to send & accept Friend Requests, giving you both the ability to call & voice call each other at will.
-</h1>
-     <a href="{% url 'create_profile' %}">Like what you see? Get started with us today by creating your profile here!</a>
-
-    <h1 class="animated-text6" style="margin-left: auto; margin-right: auto; font-size: 30px; color: rgba(255, 255, 255, 0.7); text-shadow: 2px 2px rgba(0, 0, 0, 0.7); margin-top: 20%; display: flex;">
-  Like what you see? Get started with us today by creating your profile here!
-    </h1>
         </a>
 </body>
 </html>
