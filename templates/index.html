@@ -75,7 +75,54 @@
     animation: slideInFromRight 4s forwards; /* Animation lasting 4 seconds */
 }
 
+ .fixed-element {
+            position: fixed; /* Fix position relative to the viewport */
+            left: 50%; /* Center horizontally */
+            bottom: 0%; /* Position 20% above the bottom */
+            transform: translateX(-50%); /* Adjust for element width to center it */
+            color: rgba(255, 255, 255, 0.7); /* Text color */
+            font-size: 64px; /* Font size */
+            display: flex; /* Flex display for centering */
+        }
+
+.fixed-element:hover {
+    animation: bounce 1.5s; /* Apply bounce animation on hover */
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translate(-50%, 0); /* Original position */
+    }
+    40% {
+        transform: translate(-50%, -10px); /* Move up */
+    }
+    60% {
+        transform: translate(-50%, -5px); /* Move slightly down */
+    }
+}
+
+        /* Set all animated-text elements to be initially hidden at the bottom */
+.hidden-bottom {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%) translateY(100%);
+    opacity: 0;
+    transition: transform 2s, opacity 1s;
+}
+
+.rise-in {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
+.fade-out {
+    transform: translateX(-50%) translateY(-100%);
+    opacity: 0;
+    transition: transform 2s ease-in-out, opacity 1s;
+}
+
     </style>
+
 </head>
 <body>
 
@@ -142,6 +189,7 @@
     <i>ResuMeet</i>
 </h1>    <ul>
     </ul>
+    <h3 class="fixed-element">⇓</h3>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
     const text = document.querySelector('.animated-text');
@@ -157,6 +205,56 @@
         void text.offsetWidth; // Trigger reflow to reset the animation
         text.classList.add('animated-text2'); // Re-add class to start animation
     });
+        document.addEventListener("DOMContentLoaded", function () {
+    const texts = document.querySelectorAll('.animated-text1, .animated-text2, .animated-text3, .animated-text4, .animated-text5, .animated-text6');
+    let currentIndex = 0;
+
+    // Initially hide all text elements at the bottom
+    texts.forEach((text, index) => {
+        text.classList.add('hidden-bottom');
+    });
+
+    const arrow = document.querySelector('.fixed-element');
+    arrow.addEventListener('click', function () {
+        if (currentIndex < texts.length) {
+            // If there is a previous element, make it fade out
+            if (currentIndex > 0) {
+                const previousText = texts[currentIndex - 1];
+                previousText.classList.add('fade-out');
+                previousText.classList.remove('rise-in');
+            }
+
+            // Get the current text and make it rise in
+            const currentText = texts[currentIndex];
+            currentText.classList.remove('hidden-bottom');
+            currentText.classList.add('rise-in');
+
+            // Increment the index to show the next element on the next click
+            currentIndex++;
+        }
+    });
+});
+
     </script>
+
+<h1 class="animated-text3" style="margin-left: auto; margin-right: auto; font-size: 30px; color: rgba(255, 255, 255, 0.7); text-shadow: 2px 2px rgba(0, 0, 0, 0.7); margin-top: 20%; display: flex;">
+    Welcome to ResuMeet! ResuMeet is an advanced system designed to support & connect aspiring high school students & college students alike to the peers they need in order to succeed.
+    Specifically, ResuMeet uses artificial intelligence to bring you the closest peers to you based on a variety of factors.
+
+</h1>
+
+    <h1 class="animated-text4" style="margin-left: auto; margin-right: auto; font-size: 25px; color: rgba(255, 255, 255, 0.7); text-shadow: 2px 2px rgba(0, 0, 0, 0.7); margin-top: 20%; display: flex;">
+    We also offer you the option to create a community full of peers to enhance your job preparation &
+        find what best works for you. The communities do come with creatable roles with a myriad of permissions.
+</h1>
+    <h1 class="animated-text5" style="margin-left: auto; margin-right: auto; font-size: 30px; color: rgba(255, 255, 255, 0.7); text-shadow: 2px 2px rgba(0, 0, 0, 0.7); margin-top: 20%; display: flex;">
+   Especially get along with specific users? ResuMeet allows you the option to send & accept Friend Requests, giving you both the ability to call & voice call each other at will.
+</h1>
+     <a href="{% url 'create_profile' %}">Like what you see? Get started with us today by creating your profile here!</a>
+
+    <h1 class="animated-text6" style="margin-left: auto; margin-right: auto; font-size: 30px; color: rgba(255, 255, 255, 0.7); text-shadow: 2px 2px rgba(0, 0, 0, 0.7); margin-top: 20%; display: flex;">
+  Like what you see? Get started with us today by creating your profile here!
+    </h1>
+        </a>
 </body>
 </html>
