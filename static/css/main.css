@@ -26,7 +26,7 @@ body {
     padding: .75rem;
     border-radius: 10px;
     box-shadow: 0 10px 50px 0 rgba(5, 4, 62, 0.25);
-    min-width: 200px; /* Fixed width for sidebar */
+    min-width: 50px; /* Fixed width for sidebar */
 }
 
 .sidebar-menu li + li {
@@ -159,6 +159,5 @@ details[open] div {
 }
 
 .sidebar-menu a i {
-    margin-right: 10px; /* Space between icon and text */
     font-size: 1.5rem; /* Adjust icon size as needed */
 }
