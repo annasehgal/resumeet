@@ -1,37 +1,134 @@
-
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>rgefwads
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Events</title>
+    <style>
+        :root {
+            --primary-blue: #1a73e8;
+            --secondary-blue: #4285f4;
+            --light-blue: #e8f0fe;
+            --dark-blue: #174ea6;
+            --text-color: #333333;
+            --background-color: #f5f5f5;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: var(--primary-blue);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        .event-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .event-item {
+            background-color: var(--light-blue);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .event-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .event-item h3 {
+            color: var(--dark-blue);
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 1.5em;
+        }
+
+        .event-item p {
+            margin-bottom: 15px;
+        }
+
+        .event-item img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+
+        .profile-link {
+            display: inline-block;
+            background-color: var(--primary-blue);
+            color: white;
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        .profile-link:hover {
+            background-color: var(--dark-blue);
+        }
+
+        .no-events {
+            text-align: center;
+            color: var(--text-color);
+            font-style: italic;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            h2 {
+                font-size: 2em;
+            }
+
+            .event-item {
+                padding: 15px;
+            }
+        }
+    </style>
 </head>
 <body>
-<h2>Events</h2>
-<ul>
-    {% for event in Events %}
-        <li>
-            <h3>{{ event.title }}</h3>  <!-- Adjust to your event field -->
-            <p>{{ event.description }}</p>  <!-- Adjust to your event field -->
-            {% if event.newprofile_profile_picture_url %}
-                <img src="{{ event.newprofile_profile_picture_url }}" alt="{{ event.title }} Profile Picture">
-            {% endif %}
-            <a href="{{ event.newprofile_profile_url }}">View Profile</a>
-        </li>
-    {% empty %}
-        <li>No events available.</li>
-    {% endfor %}
-</ul>
-</body>
-</html>
-
+    <div class="container">
+        <h2>Upcoming Events</h2>
+        <ul class="event-list">
+            {% for event in Events %}
+                <li class="event-item">
+                    <h3>{{ event.title }}</h3>
+                    <p>{{ event.description }}</p>
+                    {% if event.newprofile_profile_picture_url %}
+                        <img src="{{ event.newprofile_profile_picture_url }}" alt="{{ event.title }} Profile Picture">
+                    {% endif %}
+                    <a href="{{ event.newprofile_profile_url }}" class="profile-link">View Profile</a>
+                </li>
+            {% empty %}
+                <li class="no-events">No events available at the moment. Check back soon!</li>
+            {% endfor %}
+        </ul>
+    </div>
 </body>
 </html>

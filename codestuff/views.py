@@ -356,7 +356,6 @@ class BackgroundView(FormMixin, ListView):
         return context
 
 
-
 def login_user(request):
     # Your login logic here
     return render(request, 'login.html')

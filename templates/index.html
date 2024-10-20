@@ -186,6 +186,11 @@
     </a>
         <ul class="navbar-menu">
             <!-- <li class="navbar-item"><a href="#" class="navbar-link">Home</a></li> -->
+                        <li class="navbar-item">
+                {% if user.is_authenticated %}
+                       <i>     Welcome back, {{user.username}}!</i>
+                {% endif %}
+            </li>
             <li class="navbar-item">
                 {% if user.is_authenticated %}
                     <a href="{% url 'profile' username=user.username %}" class="navbar-link">Profile</a>
@@ -194,7 +199,7 @@
                 {% endif %}
             </li>
             <li class="navbar-item">
-                <a href="{% url 'signup' %}" style="text-decoration: none; color: white;">
+                <a href="{% url 'signup' %}" style="text-decoration: none; color: white;" class="navbar-link">
                     <i class="fas fa-user-plus" class="navbar-link"></i>
                     <span style="color: white; text-decoration: none !important; underline: none;">Sign Up</span>
                 </a>

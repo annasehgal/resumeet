@@ -96,7 +96,7 @@
 </head>
 <body>
     <div class="container">
-        <h2>Create a Room in {{ community.name }}</h2>
+        <h2>Create A Community</h2>
         <form method="post">
             {% csrf_token %}
             {% for field in form %}
@@ -113,7 +113,7 @@
             {% endfor %}
             <button type="submit">Create Room</button>
         </form>
-        <a href="{% url 'community_index' slug=community.slug %}" class="back-link">Back to {{ community.name }}</a>
+        <a href="{% url 'community'  %}" class="back-link">Back To Community List</a>
     </div>
 </body>
 </html>
