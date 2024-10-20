@@ -6,7 +6,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from django.db.models.signals import post_save
-from django.db import models
+from django.db import models, transaction
 from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django.template.loader import render_to_string
