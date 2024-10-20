@@ -563,18 +563,19 @@ class FriendRequest(models.Model):
         return f'{self.sender.username} -> {self.receiver.username}: {self.get_status_display()}'
 
     def get_friend_profile_pic(self):
-        return self.friend.Profile.profile_pic.url if self.friend.Profile.profile_pic else None
+        # Use 'receiver' to get the friend's profile picture
+        return self.receiver.profile.profile_pic.url if self.receiver.profile.profile_pic else None
 
     def get_user_profile_pic(self):
-        return self.user.Profile.profile_pic.url if self.user.Profile.profile_pic else None
+        # Use 'sender' to get the user's profile picture
+        return self.sender.profile.profile_pic.url if self.sender.profile.profile_pic else None
 
     def get_profile_url(self, current_user):
-        if current_user == self.sender or current_user == self.receiver:
+        if current_user in [self.sender, self.receiver]:
             profile = Profile.objects.filter(user=current_user).first()
             if profile:
                 return reverse('profile', args=[str(profile.pk)])
-
-    # Handle the case where the current user is neither the sender nor the receiver
+        return None  # Handle the case where the current user is neither sender nor receiver
 
     class Meta:
         verbose_name = "Friend Request"
@@ -586,9 +587,9 @@ class Friend(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     friend = models.ForeignKey(User, on_delete=models.CASCADE, related_name='friends')
     friend_username = models.CharField(max_length=500, blank=True, null=True)
-    latest_messages = models.ForeignKey(Message, blank=True, null=True, on_delete=models.CASCADE)
+    latest_messages = models.ForeignKey('Message', blank=True, null=True, on_delete=models.CASCADE)
     last_messaged = models.DateTimeField(blank=True, null=True)
-    currently_active = models.BooleanField(default=False)  # are you currently on the person's chat profile
+    currently_active = models.BooleanField(default=False)  # Are you currently on the person's chat profile
     created_at = models.DateTimeField(auto_now_add=True)
     online = models.BooleanField(default=False)
     is_active = models.IntegerField(default=1,
@@ -598,43 +599,35 @@ class Friend(models.Model):
                                     choices=((1, 'Active'), (0, 'Inactive')), verbose_name="Set active?")
 
     def __str__(self):
-        return str(self.user) + " is friends with " + str(self.friend) + "!"
+        return f"{self.user} is friends with {self.friend}!"
 
     def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)  # Call the original save method first
-        if self.currently_active:
-            # Update the currently_active field for all instances with the same user field, except for this instance
-            Friend.objects.exclude(pk=self.pk).filter(user=self.user).update(currently_active=False)
+        # Set the friend_username before saving
         self.friend_username = self.friend.username
-        latest_message_queryset = Message.objects.filter(Q(signed_in_user=self.user) | Q(signed_in_user=self.friend))
 
+        # If currently_active is True, deactivate other active friendships
+        if self.currently_active:
+            Friend.objects.exclude(pk=self.pk).filter(user=self.user).update(currently_active=False)
+
+        # Fetch the latest messages for the user and friend
+        latest_message_queryset = Message.objects.filter(Q(signed_in_user=self.user) | Q(signed_in_user=self.friend))
         latest_message = latest_message_queryset.order_by('-date').first()
+
         if latest_message:
             self.latest_messages = latest_message
             self.last_messaged = latest_message.date
-        super().save(*args, **kwargs)  # Save the model again with the updated field (optional)
+
+        # Call the original save method
+        super().save(*args, **kwargs)
 
     def get_profile_url(self):
         profile = Profile.objects.filter(user=self.user).first()
         if profile:
             return reverse('profile', args=[str(profile.pk)])
+        return None  # Return None if profile does not exist
 
-    def get_profile_url2(self):
-        # If friend_username is None, return the base 'new_chat' URL
-        if self.friend_username is None:
-            return reverse("new_chat")
-
-        # If friend_username exists, use it for the new_chat_create view
-        room_url = reverse("new_chat_create", kwargs={'username': self.friend_username})
-
-        # Construct the query parameters with the username
-        final_url = f"{room_url}?username={self.user.username}"
-
-        return final_url
-
-
-class Meta:
-    unique_together = ('user', 'friend')
+    class Meta:
+        unique_together = ('user', 'friend')
 
 
 class Event(models.Model):

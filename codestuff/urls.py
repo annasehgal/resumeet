@@ -14,7 +14,7 @@ from .views import UserCommunitiesView, ProfileCreateView, PersonalProfileCreate
 urlpatterns = [
     path('', views.LandingImageView.as_view(), name='index'),
     path('signup/', views.signup, name='signup'),
-    path('login/', views.login_user, name='login'),
+    path('login/', views.user_login, name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('create_community/', views.CreateCommunityView.as_view(), name='create_community'),
     path('user_communities/', UserCommunitiesView.as_view(), name='user_communities'),
@@ -39,9 +39,14 @@ urlpatterns = [
     path('community/<str:slug>/create-room/', views.CreateRoomView.as_view(), name='create_room'),
     path('community/<str:slug>/<str:room>/', views.RoomView.as_view(), name='room'),
     path('community/<str:slug>/<str:room>/messages/', views.getMessages, name='get_messages'),
+    path('calls/generate_token/', views.generate_token, name='generate_token'),
     path('news_list/', views.NewsView.as_view(), name='news_list'),
     path('singlenews/<slug:slug>/', views.SingleNewsView.as_view(), name='singlenews'),
     path('send_friend_request/', views.send_friend_request, name='send_friend_request'),
+    path('intern-profiles/', views.InternProfileCreateView.as_view(), name='intern_profiles_list'),
+    path('intern-profile/<int:pk>/', views.intern_profile_detail, name='intern_profile_detail'),
+    # Replace with detail view logic
+
     path('friend_request/<int:request_id>/<str:action>/', views.manage_friend_request, name='manage_friend_request'),
 
     #path('direct_messages/<str:friend_username>/', views.get_or_create_direct_message, name='direct_messages'),

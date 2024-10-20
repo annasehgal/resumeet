@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Voice/Video Call</title>
+</head>
+<body>
+    <h2>Agora Voice/Video Call</h2>
+    <div id="local_stream"></div>
+    <div id="remote_stream"></div>
+    <button id="startCall">Start Call</button>
+    <button id="endCall">End Call</button>
+    <script src="https://cdn.agora.io/sdk/release/AgoraRTCSDK-3.6.1.js"></script>
+
+    <script>
+        const startCallButton = document.getElementById("startCall");
+        const endCallButton = document.getElementById("endCall");
+        const localStreamContainer = document.getElementById("local_stream");
+        const remoteStreamContainer = document.getElementById("remote_stream");
+
+        let localStream;
+        let remoteStream;
+        let client;
+
+        const APP_ID = 'APP_ID';
+        const channelName = 'test_channel'; // Replace with your channel name
+        const uid = Math.floor(Math.random() * 100); // Random user ID
+
+        startCallButton.onclick = async () => {
+            client = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' });
+
+            // Get token from the server
+            const response = await fetch(`/calls/generate_token/?channel_name=${channelName}&uid=${uid}`);
+            const data = await response.json();
+            const token = data.token;
+
+            client.init(APP_ID, () => {
+                console.log("AgoraRTC client initialized");
+
+                client.join(token, channelName, uid, (uid) => {
+                    console.log("User " + uid + " join channel successfully");
+
+                    localStream = AgoraRTC.createStream({
+                        streamID: uid,
+                        audio: true,
+                        video: true,
+                        screen: false
+                    });
+
+                    localStream.init(() => {
+                        console.log("getUserMedia successfully");
+                        localStreamContainer.appendChild(localStream);
+                        localStream.play('local_stream');
+
+                        client.publish(localStream, (err) => {
+                            console.log("Publish local stream error: " + err);
+                        });
+                    });
+                });
+            });
+
+            client.on('stream-added', (evt) => {
+                const remoteStream = evt.stream;
+                const id = remoteStream.getId();
+                client.subscribe(remoteStream, (err) => {
+                    console.log("Subscribe stream failed: " + err);
+                });
+            });
+
+            client.on('stream-subscribed', (evt) => {
+                const remoteStream = evt.stream;
+                remoteStream.play('remote_stream');
+            });
+        };
+
+        endCallButton.onclick = () => {
+            localStream.leave();
+            client.leave(() => {
+                console.log("Client leaves channel successfully");
+                localStream.stop();
+            });
+        };
+    </script>
+</body>
+</html>

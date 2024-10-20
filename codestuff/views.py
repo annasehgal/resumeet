@@ -1,5 +1,7 @@
+from datetime import datetime, timedelta
 from venv import logger
 
+import jwt
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
@@ -29,7 +31,7 @@ from .forms import UserCreateForm, EmailForm, CommunityForm, ProfileForm, Person
 from .models import Room, Message, Profile, Community
 
 
-from django.views.decorators.http import require_http_methods
+from django.views.decorators.http import require_http_methods, require_GET
 from django.utils import timezone
 
 from django.shortcuts import render
@@ -94,25 +96,26 @@ def getMessages(request, slug, room):
 
 
 def signup(request):
-    form = UserCreateForm()
+    form = UserCreateForm()  # Initialize an empty form
 
     if request.method == 'POST':
-        form = UserCreateForm(request.POST)
+        form = UserCreateForm(request.POST)  # Populate form with POST data
         if form.is_valid():
-            form.save()
-            user = User.objects.get(username=request.POST['username'])
-            profile = Profile(user=user)
-            profile.save()
+            # Save the user
+            user = form.save()
+            # Create the user profile
+            Profile.objects.create(user=user)
 
+            # Authenticate and log in the user
             new_user = authenticate(username=form.cleaned_data['username'],
                                     password=form.cleaned_data['password1'])
-            login(request, new_user)
-            return redirect('index')
+            if new_user is not None:  # Check if authentication was successful
+                login(request, new_user)
+                return redirect('index')  # Redirect to the index or another page
 
     return render(request, 'signup.html', {
-        'form': form
+        'form': form  # Pass the form to the template context
     })
-
 
 
 
@@ -312,29 +315,28 @@ def ban_user_view(request, community_id, user_id):
 # This function handles changes in FriendRequest status.
 @receiver(post_save, sender=FriendRequest)
 def handle_friend_request(sender, instance, created, **kwargs):
-    if instance.status == FriendRequest.ACCEPTED:
-        # Create mutual friendship (both directions)
-        Friend.objects.get_or_create(user=instance.sender, friend=instance.receiver)
-        Friend.objects.get_or_create(user=instance.receiver, friend=instance.sender)
-    elif instance.status == FriendRequest.DECLINED:
-        # Delete the friendships if they exist (both directions)
-        Friend.objects.filter(
-            Q(user=instance.sender, friend=instance.receiver) |
-            Q(user=instance.receiver, friend=instance.sender)
-        ).delete()
+    if created:  # Only act on newly created FriendRequests
+        return  # Skip handling if this is an update to an existing request
 
-# Connect the signal to post_save of FriendRequest model
-post_save.connect(handle_friend_request, sender=FriendRequest)
+    with transaction.atomic():  # Ensure atomicity
+        if instance.status == FriendRequest.ACCEPTED:
+            # Create mutual friendship (both directions) only if it doesn't exist
+            Friend.objects.get_or_create(user=instance.sender, friend=instance.receiver)
+            Friend.objects.get_or_create(user=instance.receiver, friend=instance.sender)
+        elif instance.status == FriendRequest.DECLINED:
+            # Delete the friendships if they exist (both directions)
+            Friend.objects.filter(
+                Q(user=instance.sender, friend=instance.receiver) |
+                Q(user=instance.receiver, friend=instance.sender)
+            ).delete()
+
 
 # This function updates the friend_username field after saving a Friend instance.
 @receiver(post_save, sender=Friend)
 def update_friend_username(sender, instance, created, **kwargs):
-    # Update friend_username with the friend's username
-    instance.friend_username = instance.friend.username
-    instance.save(update_fields=['friend_username'])  # Update only the specific field to avoid a full save.
-
-# Connect the signal to post_save of Friend model
-post_save.connect(update_friend_username, sender=Friend)
+    if created:
+        instance.friend_username = instance.friend.username
+        instance.save(update_fields=['friend_username'])  # Update only the specific field
 
 
 class BackgroundView(FormMixin, ListView):
@@ -386,7 +388,9 @@ class FriendView(ListView):
 
         if signed_in_user.is_authenticated:
             context['user_profile'] = Profile.objects.filter(user=signed_in_user).first()
-            context['friends'] = Friend.objects.filter(user=signed_in_user)
+            context['friends'] = Friend.objects.filter(
+                Q(user=signed_in_user) | Q(friend=signed_in_user)
+            )
         return context
 
 
@@ -929,6 +933,7 @@ def manage_friend_request(request, request_id, action):
     # Redirect to the friend requests list or another relevant page
     return redirect(reverse('friend_requests_list'))  # Replace with your actual view name
 
+
 class InternProfileCreateView(CreateView):
     model = InternProfile
     form_class = InternProfileForm
@@ -939,3 +944,64 @@ class InternProfileCreateView(CreateView):
         # Set the user field to the currently logged-in user
         form.instance.user = self.request.user
         return super().form_valid(form)
+
+
+from django.http import JsonResponse
+from agora_token_builder import RtcTokenBuilder
+import os
+import time
+
+APP_ID = 'YOUR_APP_ID'
+APP_CERTIFICATE = 'YOUR_APP_CERTIFICATE'
+
+
+
+@require_GET
+def generate_token(request):
+    channel_name = request.GET.get('channel_name')
+    uid = request.GET.get('uid')
+    app_id = 'YOUR_APP_ID'  # Replace with your Agora App ID
+    app_certificate = 'YOUR_APP_CERTIFICATE'  # Replace with your Agora App Certificate
+
+    # Create token
+    expiration_time = datetime.now() + timedelta(minutes=60)  # Token valid for 60 minutes
+    token = jwt.encode({
+        'iss': app_id,
+        'iat': datetime.now(),
+        'exp': expiration_time,
+        'channel_name': channel_name,
+        'uid': uid
+    }, app_certificate, algorithm='HS256')
+
+    return JsonResponse({'token': token})
+
+
+def user_login(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('index')  # Redirect to your desired page after login
+        else:
+            messages.error(request, "Invalid username or password.")
+
+    return render(request, 'login.html')  # Adjust path as necessary
+
+
+class InternProfileCreateView(CreateView):
+    model = InternProfile
+    form_class = InternProfileForm
+    template_name = 'intern_profile_form.html'
+    success_url = reverse_lazy('intern_profile_success')  # Redirect after successful form submission
+
+    def form_valid(self, form):
+        # Set the user field to the currently logged-in user
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
+@login_required
+def intern_profile_detail(request, pk):
+    profile = get_object_or_404(InternProfile, pk=pk, is_active=1)
+    return render(request, 'intern_profile_detail.html', {'profile': profile})

@@ -2,9 +2,86 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Friends List</title>
+    <script src="https://cdn.agora.io/sdk/release/AgoraRTCSDK-3.6.1.js"></script>
 </head>
 <body>
+    <h2>My Friends</h2>
+    <ul>
+    {% for friend in friends %}
+        <li>
+            {% if friend.user == user %}
+                {{ friend.friend.username }}  <!-- Display the friend's username -->
+            {% else %}
+                {{ friend.user.username }}  <!-- Display the friend's username -->
+            {% endif %}
 
+            <button onclick="startCall('{{ friend.friend.username }}')">Call</button>
+        </li>
+    {% endfor %}
+
+    </ul>
+
+    <div id="local_stream" style="display: none;"></div>
+    <div id="remote_stream" style="display: none;"></div>
+
+    <script>
+        let client;
+        let localStream;
+        let APP_ID = 'YOUR_APP_ID'; // Replace with your Agora App ID
+
+        async function startCall(friendUsername) {
+            const channelName = friendUsername; // Use friend's username as channel name
+            const uid = Math.floor(Math.random() * 100); // Generate a random UID
+
+            // Fetch the token from your Django backend
+            const response = await fetch(`/calls/generate_token/?channel_name=${channelName}&uid=${uid}`);
+            const data = await response.json();
+            const token = data.token;
+
+            // Initialize Agora client
+            client = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' });
+
+            client.init(APP_ID, () => {
+                console.log("AgoraRTC client initialized");
+
+                client.join(token, channelName, uid, (uid) => {
+                    console.log("User " + uid + " joined channel successfully");
+
+                    localStream = AgoraRTC.createStream({
+                        streamID: uid,
+                        audio: true,
+                        video: true,
+                        screen: false
+                    });
+
+                    localStream.init(() => {
+                        console.log("getUserMedia successfully");
+                        localStream.play('local_stream');
+                        document.getElementById('local_stream').style.display = 'block';
+
+                        client.publish(localStream, (err) => {
+                            console.log("Publish local stream error: " + err);
+                        });
+                    });
+                });
+
+                // Subscribe to remote streams
+                client.on('stream-added', (evt) => {
+                    const remoteStream = evt.stream;
+                    client.subscribe(remoteStream, (err) => {
+                        console.log("Subscribe stream failed: " + err);
+                    });
+                });
+
+                client.on('stream-subscribed', (evt) => {
+                    const remoteStream = evt.stream;
+                    remoteStream.play('remote_stream');
+                    document.getElementById('remote_stream').style.display = 'block';
+                });
+            });
+        }
+    </script>
 </body>
 </html>

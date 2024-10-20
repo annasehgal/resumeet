@@ -8,7 +8,12 @@
     <title>Landing Page</title>
 </head>
 <body>
-    <h1>Landing Images</h1>
+{% if user.is_authenticated %}
+    <h1>Welcome, {{user.username}}!</h1>
+{% else %}
+<h1>Resumeet</h1>
+{% endif %}
+
     <ul>
         {% for image in landing_images %}
             <li style="text-decoration: none;">
