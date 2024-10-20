@@ -40,6 +40,11 @@ from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
 from .models import Room, Message, Profile, DefaultAvatar
 
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from datetime import date
+from .models import PersonalProfile
+from django.db.models import Q
 
 @require_http_methods(["GET", "POST"])
 def getMessages(request, slug, room):
@@ -1005,3 +1010,64 @@ class InternProfileCreateView(CreateView):
 def intern_profile_detail(request, pk):
     profile = get_object_or_404(InternProfile, pk=pk, is_active=1)
     return render(request, 'intern_profile_detail.html', {'profile': profile})
+
+
+@login_required
+def find_similar_profiles(request):
+    user_profile = request.user.personal_profile
+
+    if not user_profile:
+        # Redirect to profile creation page if the user has no profile yet
+        return redirect('create_personal_profile')
+
+    user_age = calculate_age(user_profile.date_of_birth)
+
+    # Retrieve all other profiles
+    profiles = PersonalProfile.objects.exclude(user=request.user)
+
+    # Create a list to store profiles with similarity scores
+    scored_profiles = []
+
+    for profile in profiles:
+        score = 0
+        age = calculate_age(profile.date_of_birth)
+
+        # Age similarity (smaller age differences get higher scores)
+        score += max(0, 10 - abs(user_age - age))
+
+        # State and city similarity
+        if user_profile.state == profile.state:
+            score += 5  # Higher score for same state
+        if user_profile.city.lower() == profile.city.lower():
+            score += 10  # Even higher score for same city
+
+        # Major similarity
+        if user_profile.major == profile.major:
+            score += 15  # Higher score for same major
+
+        # Add the profile with its score to the list
+        scored_profiles.append((profile, score))
+
+    # Sort profiles based on similarity score in descending order
+    scored_profiles.sort(key=lambda x: x[1], reverse=True)
+
+    # Extract only the profiles for rendering
+    sorted_profiles = [profile for profile, score in scored_profiles]
+
+    context = {
+        'user_profile': user_profile,
+        'similar_profiles': sorted_profiles,
+    }
+
+    return render(request, 'similar_profiles.html', context)
+
+
+def calculate_age(date_of_birth):
+    today = date.today()
+    return today.year - date_of_birth.year - ((today.month, today.day) < (date_of_birth.month, date_of_birth.day))
+
+
+@login_required
+def profile_detail(request, pk):
+    profile = get_object_or_404(PersonalProfile, pk=pk)
+    return render(request, 'soughtprofile.html', {'profile': profile})

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Similar Profiles</title>
+</head>
+<body>
+    <h2>Your Profile</h2>
+    <p>Full Name: {{ user_profile.full_name }}</p>
+    <p>Age: {{ user_profile.date_of_birth|date:"Y-m-d" }}</p>
+    <p>Location: {{ user_profile.city }}, {{ user_profile.get_state_display }}</p>
+    <p>Major: {{ user_profile.major }}</p>
+
+    <h2>Similar Profiles</h2>
+    <ul>
+        {% for profile in similar_profiles %}
+            <li>
+                <p>Full Name: {{ profile.full_name }}</p>
+                <p>Age: {{ profile.date_of_birth|date:"Y-m-d" }}</p>
+                <p>Location: {{ profile.city }}, {{ profile.get_state_display }}</p>
+                <p>Major: {{ profile.major }}</p>
+                <a href="{% url 'profile_detail' profile.id %}">View Details</a>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

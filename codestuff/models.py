@@ -15,6 +15,16 @@ from django.urls import reverse, reverse_lazy
 from django.db import models
 from django.views.generic import CreateView
 
+
+def validate_dob(value):
+    # Example validation: age must be at least 18
+    today = timezone.now().date()
+    age = today.year - value.year - ((today.month, today.day) < (value.month, value.day))
+    if age < 13:
+        raise ValidationError("You must be at least 13 years old.")
+
+
+
 STATES = [
     ('AL', 'Alabama'),
     ('AK', 'Alaska'),
@@ -97,15 +107,6 @@ def validate_dob(value):
         raise ValidationError('Date of birth cannot be in the future.')
 
 
-class PersonalProfile(models.Model):
-    full_name = models.CharField(max_length=200)
-    date_of_birth = models.DateField(validators=[validate_dob])
-    state = models.CharField(max_length=2, choices=STATES)
-    city = models.CharField(max_length=100)
-
-    class Meta:
-        verbose_name = "Personal Profile"
-
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -155,11 +156,30 @@ class Profile(models.Model):
         verbose_name_plural = "Account Profiles"
 
 
+class PersonalProfile(models.Model):
+    full_name = models.CharField(max_length=200)
+    date_of_birth = models.DateField(validators=[validate_dob])
+    state = models.CharField(max_length=2, choices=STATES)
+    major = models.ForeignKey('Major', on_delete=models.CASCADE, blank=True, null=True)
+    city = models.CharField(max_length=100)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='personal_profile')
+
+    def save(self, *args, **kwargs):
+        if not self.major and hasattr(self, 'profile'):
+            self.major = self.profile.major
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.full_name} - {self.city}, {self.state}"
+
+    class Meta:
+        verbose_name = "Personal Profile"
+
 class InternProfile(models.Model):
     username = models.CharField(max_length=200)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, blank=True, null=True)
-    major = models.ForeignKey(Major, on_delete=models.CASCADE)
+    major = models.ForeignKey(Major, on_delete=models.CASCADE, blank=True, null=True)
     resume = models.FileField(blank=True, null=True)
 
     is_active = models.IntegerField(
@@ -201,6 +221,9 @@ class InternProfile(models.Model):
         # Set the username if not already assigned
         if not self.username and self.user:
             self.username = self.user.username
+
+        if not self.major and hasattr(self, 'profile'):
+            self.major = self.profile.major
 
         # Save the instance
         super().save(*args, **kwargs)
