@@ -498,7 +498,8 @@ class PersonalProfileCreateView(CreateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return redirect('profile')  # Adjust the redirect to your desired URL
+        return reverse('similar-profiles')  # Use reverse instead of redirect
+
 
 # Intern Profile Form View
 class InternProfileCreateView(CreateView):
@@ -514,7 +515,7 @@ def create_profile(request):
         form = ProfileForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('profile_success')  # Redirect after saving
+            return redirect('-profiles')  # Redirect after saving
     else:
         form = ProfileForm()
     return render(request, 'profile_form.html', {'form': form})

@@ -16,12 +16,6 @@ from django.db import models
 from django.views.generic import CreateView
 
 
-def validate_dob(value):
-    # Example validation: age must be at least 18
-    today = timezone.now().date()
-    age = today.year - value.year - ((today.month, today.day) < (value.month, value.day))
-    if age < 13:
-        raise ValidationError("You must be at least 13 years old.")
 
 
 
@@ -103,8 +97,14 @@ class Keywords(models.Model):
 
 
 def validate_dob(value):
+    # Example validation: age must be at least 18
+    today = timezone.now().date()
+    age = today.year - value.year - ((today.month, today.day) < (value.month, value.day))
+
     if value > timezone.now().date():
         raise ValidationError('Date of birth cannot be in the future.')
+    if age < 13:
+        raise ValidationError("You must be at least 13 years old.")
 
 
 class Profile(models.Model):
@@ -160,6 +160,7 @@ class PersonalProfile(models.Model):
     date_of_birth = models.DateField(validators=[validate_dob])
     state = models.CharField(max_length=2, choices=STATES)
     major = models.ForeignKey('Major', on_delete=models.CASCADE, blank=True, null=True)
+    profile = models.ForeignKey('Profile', on_delete=models.CASCADE, blank=True, null=True)
     city = models.CharField(max_length=100)
     keywords = models.ManyToManyField(Keywords, blank=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='personal_profile')
@@ -167,7 +168,13 @@ class PersonalProfile(models.Model):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
 
-        if not self.keywords.exists() and hasattr(self, 'profile'):
+        # Check if the profile field is set
+        if self.profile is None:  # Check if profile is None
+            # Get the user's profile and assign it
+            self.profile = getattr(self.user, 'profile', None)
+
+        # Ensure keywords are set if profile has keywords
+        if self.profile and not self.keywords.exists():
             self.keywords.set(self.profile.keywords.all())
 
     def __str__(self):

@@ -49,8 +49,6 @@ INSTALLED_APPS = [
     'favicon',
     'rest_framework',
     'sslserver',
-    # 'django.chatbot',
-    # 'chat',
 ]
 
 MIDDLEWARE = [
