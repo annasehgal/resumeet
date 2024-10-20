@@ -36,6 +36,7 @@ urlpatterns = [
     path('community/join/<uuid:invite_token>/', views.join_community, name='community_invite'),
     path('community/', views.ChatView.as_view(), name='community'),
     path('community/<str:slug>/', views.CommunityView.as_view(), name='community_index'),
+    path('community/<str:slug>/create-room/', views.CreateRoomView.as_view(), name='create_room'),
     path('community/<str:slug>/<str:room>/', views.RoomView.as_view(), name='room'),
     path('community/<str:slug>/<str:room>/messages/', views.getMessages, name='get_messages'),
     path('news_list/', views.NewsView.as_view(), name='news_list'),

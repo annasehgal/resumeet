@@ -20,17 +20,21 @@ admin.site.register(Room)
 from django.contrib import admin
 from .models import Community, Role, CommunityRoleAssignment, Room
 
+
 class RoleInline(admin.TabularInline):
     model = Role
     extra = 1  # Number of empty rows to display
+
 
 class RoomInline(admin.TabularInline):
     model = Room
     extra = 1  # Number of empty rows to display
 
+
 class CommunityRoleAssignmentInline(admin.TabularInline):
     model = CommunityRoleAssignment
     extra = 1  # Number of empty rows to display
+
 
 @admin.register(Community)
 class CommunityAdmin(admin.ModelAdmin):

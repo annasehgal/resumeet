@@ -278,6 +278,8 @@ class Role(models.Model):
     ability_to_kick_people = models.BooleanField(default=False)
     ability_to_ban_people = models.BooleanField(default=False)
     ability_to_assign_roles = models.BooleanField(default=False)
+    ability_to_create_rooms = models.BooleanField(default=False)
+    ability_to_delete_rooms = models.BooleanField(default=False)
     hierarchy = models.IntegerField(blank=True, null=True)
     administrator = models.BooleanField(default=False)
 
@@ -312,6 +314,13 @@ class CommunityRoleAssignment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='community_roles')
     community = models.ForeignKey(Community, on_delete=models.CASCADE, related_name='user_roles')
     role = models.ForeignKey(Role, on_delete=models.CASCADE, related_name='user_assignments')
+    ability_to_add_rooms = models.BooleanField(default=False)
+    ability_to_add_people = models.BooleanField(default=True)
+    ability_to_kick_people = models.BooleanField(default=False)
+    ability_to_ban_people = models.BooleanField(default=False)
+    ability_to_assign_roles = models.BooleanField(default=False)
+    ability_to_create_rooms = models.BooleanField(default=False)
+    ability_to_delete_rooms = models.BooleanField(default=False)
     assigned_at = models.DateTimeField(default=timezone.now)
 
     class Meta:
@@ -349,7 +358,7 @@ class Room(models.Model):
 
         if not self.pk:
             # Get the associated Profile for the user
-            profile = Profile.objects.filter(user=self.user).first()
+            profile = Profile.objects.filter(user=self.signed_in_user).first()
 
         super().save(*args, **kwargs)
 
@@ -702,3 +711,4 @@ class DefaultAvatar(models.Model):
     class Meta:
         verbose_name = "Default Avatar"
         verbose_name_plural = "Default Avatars"
+

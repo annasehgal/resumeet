@@ -1,6 +1,4 @@
-<!-- codestuff/templates/codestuff/create_community.html -->
-{% extends "base.html" %}  <!-- Use your base template -->
-{% load static %}
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -10,11 +8,12 @@
 </head>
 <body>
 <h2>Create Event</h2>
-<form method="post">
+<form action="{% url 'room_view' community_id=community.id slug=community.slug %}" method="POST">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Create Event</button>
+    <!-- Your form fields here -->
+    <button type="submit">Submit</button>
 </form>
+
 
 </body>
 </html>

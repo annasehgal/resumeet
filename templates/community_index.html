@@ -55,6 +55,10 @@
         <li>No role assignments.</li>
     {% endfor %}
 </ul>
+{% if url == 'community_index' %}
+<a href="{% url 'create_room' slug=community.slug %}">Create Room</a>
+{% endif %}
+
 
 </body>
 </html>

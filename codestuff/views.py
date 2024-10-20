@@ -25,7 +25,7 @@ from django.shortcuts import redirect, render, get_object_or_404
 from django.views.generic import ListView, TemplateView, DetailView
 
 from .forms import UserCreateForm, EmailForm, CommunityForm, ProfileForm, PersonalProfileForm, \
-    InternProfileForm, SupportEmailForm, RSVPForm, FriendRequestForm
+    InternProfileForm, SupportEmailForm, RSVPForm, FriendRequestForm, RoomCreationForm
 from .models import Room, Message, Profile, Community
 
 
@@ -37,6 +37,7 @@ from django.shortcuts import render
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
 from .models import Room, Message, Profile, DefaultAvatar
+
 
 @require_http_methods(["GET", "POST"])
 def getMessages(request, slug, room):
@@ -111,6 +112,8 @@ def signup(request):
     return render(request, 'signup.html', {
         'form': form
     })
+
+
 
 
 from django.shortcuts import get_object_or_404
@@ -214,6 +217,73 @@ class RoomView(ListView):
                 message.user_profile_url = profile.get_absolute_url()
 
         return context
+
+
+class CreateRoomView(LoginRequiredMixin, View):
+    form_class = RoomCreationForm
+    template_name = 'create_room.html'
+
+    def get(self, request, *args, **kwargs):
+        slug = self.kwargs['slug']
+        community = get_object_or_404(Community, slug=slug)
+
+        # Retrieve roles related to the community
+        user_roles = community.user_roles.filter(user=request.user)
+
+        # Log user roles and their permissions
+        for role in user_roles:
+            print(f"Role: {role.role.name}, Can Create Room: {role.role.ability_to_create_rooms}")
+
+        # Check if the user has any role that allows creating rooms
+        can_create_room = any(role.role.ability_to_create_rooms for role in user_roles)  # Adjust if necessary
+        print(f"Can Create Room: {can_create_room}")  # Debugging line
+
+        if not can_create_room:
+            messages.error(request, "You do not have permission to create rooms in this community.")
+            return redirect('community_index', slug=slug)
+
+        form = self.form_class()
+        return render(request, self.template_name, {'form': form, 'community': community})
+
+    def post(self, request, *args, **kwargs):
+        slug = self.kwargs['slug']
+        community = get_object_or_404(Community, slug=slug)
+
+        user_roles = community.user_roles.filter(user=request.user)
+
+        # Log user roles and their permissions
+        for role in user_roles:
+            print(f"Role: {role.role.name}, Can Create Room: {role.role.ability_to_create_rooms}")
+
+        can_create_room = any(role.role.ability_to_create_rooms for role in user_roles)  # Adjust if necessary
+        print(f"Can Create Room: {can_create_room}")  # Debugging line
+
+        if not can_create_room:
+            messages.error(request, "You do not have permission to create rooms in this community.")
+            return redirect('community_index', slug=slug)
+
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            room = form.save(commit=False)
+            room.community = community
+            room.creator = request.user
+            room.save()
+            messages.success(request, "Room created successfully!")
+            return redirect('community_index', slug=slug)
+        else:
+            messages.error(request, "Please correct the errors below.")
+
+        return render(request, self.template_name, {'form': form, 'community': community})
+
+def community_detail_view(request, slug):
+    community = get_object_or_404(Community, slug=slug)
+    user_roles = community.user_roles.filter(user=request.user)
+
+    context = {
+        'community': community,
+        'user_roles': user_roles,
+    }
+    return render(request, 'community_index.html', context)
 
 
 
@@ -756,7 +826,7 @@ def rsvp_event(request, event_id):
 
 def community_detail(request, slug):
     community = get_object_or_404(Community, slug=slug)
-    return render(request, 'community_detail.html', {'community': community})
+    return render(request, 'community.html', {'community': community})
 
 
 class NewsView(ListView):

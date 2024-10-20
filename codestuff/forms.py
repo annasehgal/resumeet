@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.core.mail import send_mail
 
 from hackerthin import settings
-from .models import Profile, PersonalProfile, InternProfile, Major, Subscription, Community, SupportEmail
+from .models import Profile, PersonalProfile, InternProfile, Major, Subscription, Community, SupportEmail, Room
 
 
 class ProfileForm(forms.ModelForm):
@@ -122,3 +122,8 @@ class FriendRequestForm(forms.Form):
         })
     )
 
+
+class RoomCreationForm(forms.ModelForm):
+    class Meta:
+        model = Room
+        fields = ['name', 'public', 'logo']
