@@ -139,7 +139,7 @@
             top: 0;
             left: 0;
             right: 0;
-            background: linear-gradient(45deg, blue, red);
+            background: linear-gradient(45deg, rgba(0, 0, 255, 0.6), rgba(192, 192, 192, 0.6));
             color: white;
             padding: 1rem;
             display: flex;
@@ -181,72 +181,108 @@
 </head>
 <body>
 <nav class="navbar" role="navigation" aria-label="main navigation">
-        <a href="#" class="navbar-brand">Logo</a>
+    <a href="{% url 'index' %}" class="navbar-brand">
+        <img src="{% static  'css/ResuMeetLogo.jpg' %}" alt="Logo" style="height: 40px;">
+    </a>
         <ul class="navbar-menu">
-            <li class="navbar-item"><a href="#" class="navbar-link">Home</a></li>
-            <li class="navbar-item"><a href="{% url 'profile' username=user.username  %}" class="navbar-link">Profile</a></li>
-            <li class="navbar-item"><a href="#" class="navbar-link">About</a></li>
-            <li class="navbar-item"><a href="#" class="navbar-link">Contact</a></li>
+            <!-- <li class="navbar-item"><a href="#" class="navbar-link">Home</a></li> -->
+            <li class="navbar-item">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'profile' username=user.username %}" class="navbar-link">Profile</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="navbar-link">Login</a>
+                {% endif %}
+            </li>
+            <li class="navbar-item">
+                <a href="{% url 'signup' %}">
+                    <i class="fas fa-user-plus" class="navbar-link"></i>
+                    <span style="color: white; text-decoration: none; underline: none;">Sign Up</span>
+                </a>
+            </li>
+
+            <!-- <li class="navbar-item"><a href="#" class="navbar-link">About</a></li> -->
+            <!-- <li class="navbar-item"><a href="#" class="navbar-link">Contact</a></li> -->
         </ul>
     </nav>
 
-    <!-- Navigation Bar -->
-    <nav style="margin-top: 5%;">
-        <ul class="sidebar-menu" style="
-    min-width: 60px; height: 80%; background: rgba(255, 255, 255, 0.1);">
-            <li style="">
-                <a href="#">
-                    <i class="fas fa-home"></i>
-                    <span>Home</span>
-                </a>
-            </li>
-            <li style="">
-                <a href="#">
-                    <i class="fas fa-compass"></i>
-                    <span>Explore</span>
-                </a>
-            </li>
-            <li style="">
-                <a href="#">
-                    <i class="fas fa-comments"></i>
-                    <span>Messages</span>
-                </a>
-            </li>
-            <li style="">
-                <a href="#">
-                    <i class="fas fa-calendar-alt"></i>
-                    <span>Events</span>
-                </a>
-            </li>
-            <li style="">
-                <a href="#">
-                    <i class="fas fa-bell"></i>
-                    <span>Notification</span>
-                </a>
-            </li>
-            <li style="">
-                <a href="#">
-                    <i class="fas fa-plus-circle"></i>
-                    <span>Create Post</span>
-                </a>
-            </li>
-            <li style="">
-                <a href="#">
+  <!-- Navigation Bar -->
+<nav style="margin-top: 5%;">
+    <ul class="sidebar-menu" style="min-width: 60px; height: 80%; background: rgba(255, 255, 255, 0.1);">
+        <li>
+            <a href="{% url 'index' %}">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'news_list' %}">
+                <i class="fas fa-newspaper"></i>
+                <span>News</span>
+            </a>
+        </li>
+        <!-- <li>
+            <a href="{% url 'create_community' %}">
+                <i class="fas fa-users"></i>
+                <span>Create Community</span>
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'user_communities' %}">
+                <i class="fas fa-building"></i>
+                <span>My Communities</span>
+            </a>
+        </li> -->
+        <li>
+            <a href="{% url 'friendslist' %}">
+                <i class="fas fa-users"></i>
+                <span>Friends List</span>
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'event_list' %}">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Events</span>
+            </a>
+        </li>
+        {% if user.is_authenticated %}
+            <li>
+                <a href="{% url 'profile' username=user.username %}">
                     <i class="fas fa-user-circle"></i>
-                    <span>My account</span>
+                    <span>My Account</span>
                 </a>
             </li>
-            <li style="">
-                <a href="#">
-                    <i class="fas fa-cog"></i>
-                    <span>Settings</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
+        {% endif %}
+        <li>
+            <a href="{% url 'about' %}">
+                <i class="fas fa-info-circle"></i>
+                <span>About</span>
+            </a>
+        </li>
+        <!-- <li>
+            <a href="{% url 'notifications' %}">
+                <i class="fas fa-bell"></i>
+                <span>Notifications</span>
+            </a>
+        </li> -->
+        <!-- <li>
+            <a href="{% url 'community' %}">
+                <i class="fas fa-comments"></i>
+                <span>Community</span>
+            </a>
+        </li> -->
+        <!-- <li>
+            <a href="{% url 'supportemail' %}">
+                <i class="fas fa-envelope"></i>
+                <span>Support</span>
+            </a>
+        </li> -->
+        <!-- User Profile Link -->
+    </ul>
+</nav>
+
 
 <div class="container">
-    <h1 class="animated-text"><i>I'm Sleepy My Brain Is Not Working</i></h1>
+    <h1 class="animated-text"><i>Your Major, Your Network, Your Future.</i></h1>
 </div>
 
   <h1 class="animated-text2" style="margin-left: auto; margin-right: auto; font-size: 70px; color: rgba(255, 255, 255, 0.7); text-shadow: 2px 2px rgba(0, 0, 0, 0.7); margin-top: 20%; display: flex;">
