@@ -283,6 +283,7 @@ class CreateRoomView(LoginRequiredMixin, View):
 
         return render(request, self.template_name, {'form': form, 'community': community})
 
+
 def community_detail_view(request, slug):
     community = get_object_or_404(Community, slug=slug)
     user_roles = community.user_roles.filter(user=request.user)
@@ -485,24 +486,23 @@ class ProfileCreateView(CreateView):
     form_class = ProfileForm
     template_name = 'profile_form.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Get the user's existing profile, if it exists
+        context['existing_profile'] = Profile.objects.filter(user=self.request.user).first()
+        return context
+
     def get_success_url(self):
-        # Redirect the user to their profile page after editing or creating their profile
         return reverse('profile', kwargs={'username': self.request.user.username})
 
     def form_valid(self, form):
-        # Check if the user already has a profile
         existing_profile = Profile.objects.filter(user=self.request.user).first()
         if existing_profile:
-            # Delete the existing profile if found
             existing_profile.delete()
 
-        # Assign the user to the new profile before saving
         form.instance.user = self.request.user
-
-        # Save the new profile
         return super().form_valid(form)
 
-# Personal Profile Form View
 
 class PersonalProfileCreateView(CreateView):
     model = PersonalProfile
@@ -518,11 +518,35 @@ class PersonalProfileCreateView(CreateView):
 
 
 # Intern Profile Form View
+
 class InternProfileCreateView(CreateView):
     model = InternProfile
     form_class = InternProfileForm
-    template_name = 'intern_profile_form.html'  # Specify your template name
-    success_url = reverse_lazy('intern_profile_success')  # Redirect after submission
+    template_name = 'intern_profile_form.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['existing_profile'] = self.get_object()
+        return context
+
+    def get_object(self):
+        # Retrieve the existing profile if it exists, otherwise None
+        return InternProfile.objects.filter(user=self.request.user).first()
+
+    def form_valid(self, form):
+        existing_profile = InternProfile.objects.filter(user=self.request.user).first()
+        if existing_profile:
+            existing_profile.delete()
+
+        # Assign the user to the form before saving
+        form.instance.user = self.request.user
+        self.object = form.save()  # Save the form and get the object
+
+        # Set the context with the created profile instance
+        return redirect(self.get_success_url())
+
+    def get_success_url(self):
+        return reverse('intern_profile_detail', kwargs={'username': self.request.user.username})
 
 
 # Profile Form View
@@ -970,17 +994,6 @@ def manage_friend_request(request, request_id, action):
     return redirect(reverse('friend_requests_list'))  # Replace with your actual view name
 
 
-class InternProfileCreateView(CreateView):
-    model = InternProfile
-    form_class = InternProfileForm
-    template_name = 'intern_profile_form.html'
-    success_url = reverse_lazy('intern_profile_success')  # Redirect after successful form submission
-
-    def form_valid(self, form):
-        # Set the user field to the currently logged-in user
-        form.instance.user = self.request.user
-        return super().form_valid(form)
-
 
 from django.http import JsonResponse
 from agora_token_builder import RtcTokenBuilder
@@ -1026,22 +1039,15 @@ def user_login(request):
     return render(request, 'login.html')  # Adjust path as necessary
 
 
-class InternProfileCreateView(CreateView):
+class InternProfileDetailView(DetailView):
     model = InternProfile
-    form_class = InternProfileForm
-    template_name = 'intern_profile_form.html'
-    success_url = reverse_lazy('intern_profile_success')  # Redirect after successful form submission
+    template_name = 'intern_profile_detail.html'
+    context_object_name = 'intern_profile'
 
-    def form_valid(self, form):
-        # Set the user field to the currently logged-in user
-        form.instance.user = self.request.user
-        return super().form_valid(form)
-
-@login_required
-def intern_profile_detail(request, pk):
-    profile = get_object_or_404(InternProfile, pk=pk, is_active=1)
-    return render(request, 'intern_profile_detail.html', {'profile': profile})
-
+    def get_object(self, queryset=None):
+        username = self.kwargs.get('username')
+        # Use get_object_or_404 to handle the case where the profile doesn't exist
+        return get_object_or_404(InternProfile, username=username)
 
 @login_required
 def find_similar_profiles(request):

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intern Profile - {{ intern_profile.username }}</title>
+    <style>
+        :root {
+            --primary-blue: #0056b3;
+            --secondary-blue: #007bff;
+            --light-blue: #e6f2ff;
+            --dark-blue: #004085;
+            --white: #ffffff;
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-600: #6c757d;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: var(--gray-600);
+            background: linear-gradient(135deg, var(--light-blue), var(--white));
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background-color: var(--white);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background-color: var(--primary-blue);
+            color: var(--white);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h2 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .profile-content {
+            padding: 30px;
+        }
+
+        .profile-item {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .profile-label {
+            font-weight: bold;
+            color: var(--dark-blue);
+            width: 100px;
+            flex-shrink: 0;
+        }
+
+        .profile-value {
+            color: var(--gray-600);
+            flex-grow: 1;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .status-active {
+            background-color: #28a745;
+            color: var(--white);
+        }
+
+        .status-inactive {
+            background-color: var(--gray-300);
+            color: var(--gray-600);
+        }
+
+        .resume-link {
+            display: inline-block;
+            background-color: var(--secondary-blue);
+            color: var(--white);
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .resume-link:hover {
+            background-color: var(--primary-blue);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 0;
+                box-shadow: none;
+            }
+
+            .profile-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .profile-label {
+                margin-bottom: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h2>{{ intern_profile.username }}'s Profile</h2>
+        </header>
+        <div class="profile-content">
+            <div class="profile-item">
+                <span class="profile-label">Major:</span>
+                <span class="profile-value">{{ intern_profile.major }}</span>
+            </div>
+            <div class="profile-item">
+                <span class="profile-label">Status:</span>
+                <span class="profile-value">
+                    <span class="status-badge {% if intern_profile.is_active %}status-active{% else %}status-inactive{% endif %}">
+                        {{ intern_profile.get_is_active_display }}
+                    </span>
+                </span>
+            </div>
+            {% if intern_profile.resume %}
+                <div class="profile-item">
+                    <span class="profile-label">Resume:</span>
+                    <span class="profile-value">
+                        <a href="{{ intern_profile.resume.url }}" class="resume-link" target="_blank">Download Resume</a>
+                    </span>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

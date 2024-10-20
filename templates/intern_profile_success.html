@@ -8,6 +8,6 @@
 <body>
     <h1>Profile created successfully!</h1>
     <p>Your intern profile has been created.</p>
-    <a href="{% url 'profile' username=request.user.username %}">View your profile</a>
+    <a href="{% url 'intern_profile_detail' profile.pk %}">View Your Intern Profile</a>
 </body>
 </html>

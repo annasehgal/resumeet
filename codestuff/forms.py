@@ -10,7 +10,7 @@ from .models import Profile, PersonalProfile, InternProfile, Major, Subscription
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ('user', 'username', 'email', 'avatar', 'alternate', 'about_me', 'keywords', 'opt_in')
+        fields = ('username', 'email', 'avatar', 'alternate', 'about_me', 'keywords', 'opt_in')
 
 
 class PersonalProfileForm(forms.ModelForm):

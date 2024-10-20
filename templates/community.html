@@ -1,25 +1,96 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Public Communities</title>
+    <style>
+        :root {
+            --primary-blue: #1a5f7a;
+            --secondary-blue: #57c5b6;
+            --light-blue: #e6f4f7;
+            --dark-blue: #002b5b;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+
+        h2 {
+            color: var(--primary-blue);
+            font-size: 28px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--secondary-blue);
+            padding-bottom: 10px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            background-color: var(--light-blue);
+            border-radius: 6px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        li:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        a {
+            display: block;
+            color: var(--dark-blue);
+            text-decoration: none;
+            padding: 15px 20px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        p {
+            margin: 0;
+            padding: 0 20px 15px;
+            color: #555;
+        }
+
+        .empty-message {
+            color: #777;
+            font-style: italic;
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
 </head>
 <body>
-<h2>Public Communities</h2>
-<ul>
-    {% for community in public_communities %}
-        <li>
-            <a href="{% url 'community_index' community.slug %}">{{ community.name }}</a>
-            <p>{{ community.description }}</p>
-        </li>
-    {% empty %}
-        <li>No public communities available.</li>
-    {% endfor %}
-</ul>
-
-
-
+    <div class="container">
+        <h2>Public Communities</h2>
+        <ul>
+            {% for community in public_communities %}
+                <li>
+                    <a href="{% url 'community_index' community.slug %}">{{ community.name }}</a>
+                    <p>{{ community.description }}</p>
+                </li>
+            {% empty %}
+                <li class="empty-message">No public communities available.</li>
+            {% endfor %}
+        </ul>
+    </div>
 </body>
 </html>

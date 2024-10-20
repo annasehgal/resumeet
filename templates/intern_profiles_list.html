@@ -15,9 +15,11 @@
     <ul>
         {% for profile in intern_profiles %}
             <li>
-                <p>Username: {{ profile.username }}</p>
+                <h2>{{ profile.username }}'s Intern Profile</h2>
                 <p>Major: {{ profile.major }}</p>
-                <a href="{% url 'intern_profile_detail' profile.id %}">View Details</a> <!-- Replace 'intern_profile_detail' with the actual URL name for the profile detail view -->
+                {% if profile.resume %}
+                    <a href="{% url 'intern_profile_detail' user=user.username %}">Download Resume</a>
+                {% endif %}
             </li>
         {% endfor %}
     </ul>

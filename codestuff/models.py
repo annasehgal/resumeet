@@ -185,7 +185,7 @@ class PersonalProfile(models.Model):
 
 
 class InternProfile(models.Model):
-    username = models.CharField(max_length=200)
+    username = models.CharField(max_length=200, blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, blank=True, null=True)
     major = models.ForeignKey(Major, on_delete=models.CASCADE, blank=True, null=True)
@@ -208,7 +208,7 @@ class InternProfile(models.Model):
 
     def get_absolute_url(self):
         from django.urls import reverse
-        return reverse('profile', kwargs={'pk': self.pk})  # or 'username' if it remains
+        return reverse('intern_profile_detail', kwargs={'username': self.username})
 
     def save(self, *args, **kwargs):
         # Set the user if not already assigned

@@ -5,26 +5,150 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Friends List</title>
     <script src="https://cdn.agora.io/sdk/release/AgoraRTCSDK-3.6.1.js"></script>
+    <style>
+        :root {
+            --primary-blue: #1a5f7a;
+            --secondary-blue: #57c5b6;
+            --light-blue: #e6f4f7;
+            --dark-blue: #002b5b;
+            --white: #ffffff;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-600: #4b5563;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: var(--gray-600);
+            background: linear-gradient(to bottom right, var(--light-blue), var(--secondary-blue));
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: var(--white);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background-color: var(--primary-blue);
+            color: var(--white);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h2 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .friends-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .friend-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--gray-200);
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        .friend-item:last-child {
+            border-bottom: none;
+        }
+
+        .friend-item:hover {
+            background-color: var(--light-blue);
+        }
+
+        .friend-name {
+            font-weight: bold;
+            color: var(--dark-blue);
+        }
+
+        .call-button {
+            background-color: var(--secondary-blue);
+            color: var(--white);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        .call-button:hover {
+            background-color: var(--primary-blue);
+        }
+
+        .video-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+            padding: 20px;
+        }
+
+        .video-stream {
+            width: 320px;
+            height: 240px;
+            background-color: var(--gray-200);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        #local_stream, #remote_stream {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 0;
+            }
+
+            .video-container {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h2>My Friends</h2>
-    <ul>
-    {% for friend in friends %}
-        <li>
-            {% if friend.user == user %}
-                {{ friend.friend.username }}  <!-- Display the friend's username -->
-            {% else %}
-                {{ friend.user.username }}  <!-- Display the friend's username -->
-            {% endif %}
-
-            <button onclick="startCall('{{ friend.friend.username }}')">Call</button>
-        </li>
-    {% endfor %}
-
-    </ul>
-
-    <div id="local_stream" style="display: none;"></div>
-    <div id="remote_stream" style="display: none;"></div>
+    <div class="container">
+        <header class="header">
+            <h2>My Friends</h2>
+        </header>
+        <ul class="friends-list">
+            {% for friend in friends %}
+                <li class="friend-item">
+                    <span class="friend-name">
+                        {% if friend.user == user %}
+                            {{ friend.friend.username }}
+                        {% else %}
+                            {{ friend.user.username }}
+                        {% endif %}
+                    </span>
+                    <button class="call-button" onclick="startCall('{{ friend.friend.username }}')">Call</button>
+                </li>
+            {% endfor %}
+        </ul>
+        <div class="video-container">
+            <div id="local_stream" class="video-stream" style="display: none;"></div>
+            <div id="remote_stream" class="video-stream" style="display: none;"></div>
+        </div>
+    </div>
 
     <script>
         let client;

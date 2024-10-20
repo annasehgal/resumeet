@@ -2,63 +2,275 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ community_details.name }} - Community Details</title>
+    <style>
+        :root {
+            --primary-blue: #1a5f7a;
+            --secondary-blue: #57c5b6;
+            --light-blue: #e6f4f7;
+            --dark-blue: #002b5b;
+            --white: #ffffff;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-600: #4b5563;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: var(--gray-600);
+            background: linear-gradient(to bottom right, var(--light-blue), var(--secondary-blue));
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: var(--white);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background-color: var(--primary-blue);
+            color: var(--white);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--white);
+        }
+
+        .community-name {
+            font-size: 28px;
+            margin: 0;
+        }
+
+        .community-description {
+            margin: 5px 0 0;
+            opacity: 0.8;
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            color: var(--primary-blue);
+            border-bottom: 2px solid var(--secondary-blue);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .info-item {
+            background-color: var(--gray-100);
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        .info-label {
+            font-size: 0.9em;
+            color: var(--gray-600);
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-weight: bold;
+            color: var(--dark-blue);
+        }
+
+        .list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .list-item {
+            background-color: var(--light-blue);
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .list-item:hover {
+            transform: translateY(-2px);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .badge-public {
+            background-color: var(--secondary-blue);
+            color: var(--white);
+        }
+
+        .badge-private {
+            background-color: var(--gray-300);
+            color: var(--gray-600);
+        }
+
+        .room-link {
+            color: var(--primary-blue);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .room-link:hover {
+            text-decoration: underline;
+        }
+
+        .create-room-btn {
+            display: inline-block;
+            background-color: var(--primary-blue);
+            color: var(--white);
+            padding: 10px 15px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        .create-room-btn:hover {
+            background-color: var(--dark-blue);
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-<h1>{{ community_details.name }}</h1>
-<p>{{ community_details.description }}</p>
-<p>Created by: {{ community_details.created_by.username }}</p>
-<p>Created on: {{ community_details.created_at|date:"F j, Y" }}</p>
-<p>Owner: {{ community_details.owner.username }}</p>
-<p>Public: {{ community_details.public }}</p>
-<p>Members: {{ community_details.members.count }}</p>
+    <div class="container">
+        <header class="header">
+            {% if community_details.logo %}
+                <img src="{{ community_details.logo.url }}" alt="{{ community_details.name }} Logo" class="logo">
+            {% endif %}
+            <div>
+                <h1 class="community-name">{{ community_details.name }}</h1>
+                <p class="community-description">{{ community_details.description }}</p>
+            </div>
+        </header>
 
-{% if community_details.logo %}
-    <img src="{{ community_details.logo.url }}" alt="{{ community_details.name }} Logo">
-{% endif %}
-<h2>Members:</h2>
-<ul>
-    {% for profile in member_profiles %}
-        <li>{{ profile.user.username }}</li>
-    {% endfor %}
-</ul>
+        <main class="content">
+            <section class="section">
+                <h2 class="section-title">Community Information</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Created by</div>
+                        <div class="info-value">{{ community_details.created_by.username }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Created on</div>
+                        <div class="info-value">{{ community_details.created_at|date:"F j, Y" }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Owner</div>
+                        <div class="info-value">{{ community_details.owner.username }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Visibility</div>
+                        <div class="info-value">
+                            <span class="badge {% if community_details.public %}badge-public{% else %}badge-private{% endif %}">
+                                {% if community_details.public %}Public{% else %}Private{% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Members</div>
+                        <div class="info-value">{{ community_details.members.count }}</div>
+                    </div>
+                </div>
+            </section>
 
-   <h1>{{ community.name }}</h1>
-<p>{{ community.description }}</p>
+            <section class="section">
+                <h2 class="section-title">Members</h2>
+                <ul class="list">
+                    {% for profile in member_profiles %}
+                        <li class="list-item">{{ profile.user.username }}</li>
+                    {% empty %}
+                        <li class="list-item">No members yet.</li>
+                    {% endfor %}
+                </ul>
+            </section>
 
-<h2>Roles</h2>
-<ul>
-    {% for role in roles %}
-        <li>{{ role.name }} (Hierarchy: {{ role.hierarchy }})</li>
-    {% empty %}
-        <li>No roles assigned.</li>
-    {% endfor %}
-</ul>
+            <section class="section">
+                <h2 class="section-title">Roles</h2>
+                <ul class="list">
+                    {% for role in roles %}
+                        <li class="list-item">{{ role.name }} (Hierarchy: {{ role.hierarchy }})</li>
+                    {% empty %}
+                        <li class="list-item">No roles assigned.</li>
+                    {% endfor %}
+                </ul>
+            </section>
 
-<h2>Rooms</h2>
-<ul>
-   {% for room in community.rooms.all %}  <!-- Use community instead of community_details -->
-        <li>
-            <a href="{% url 'get_messages' community.slug room.name %}">{{ room.name }}</a> -
-            {% if room.public %}Public{% else %}Private{% endif %}
-        </li>
-    {% empty %}
-        <li>No rooms available.</li>
-    {% endfor %}
-</ul>
+            <section class="section">
+                <h2 class="section-title">Rooms</h2>
+                <ul class="list">
+                    {% for room in community.rooms.all %}
+                        <li class="list-item">
+                            <a href="{% url 'get_messages' community.slug room.name %}" class="room-link">{{ room.name }}</a> -
+                            <span class="badge {% if room.public %}badge-public{% else %}badge-private{% endif %}">
+                                {% if room.public %}Public{% else %}Private{% endif %}
+                            </span>
+                        </li>
+                    {% empty %}
+                        <li class="list-item">No rooms available.</li>
+                    {% endfor %}
+                </ul>
+            </section>
 
-<h2>User Role Assignments</h2>
-<ul>
-    {% for assignment in user_roles %}
-        <li>{{ assignment.user.username }} - Role: {{ assignment.role.name }} (Assigned at: {{ assignment.assigned_at }})</li>
-    {% empty %}
-        <li>No role assignments.</li>
-    {% endfor %}
-</ul>
-{% if url == 'community_index' %}
-<a href="{% url 'create_room' slug=community.slug %}">Create Room</a>
-{% endif %}
+            <section class="section">
+                <h2 class="section-title">User Role Assignments</h2>
+                <ul class="list">
+                    {% for assignment in user_roles %}
+                        <li class="list-item">
+                            {{ assignment.user.username }} - Role: {{ assignment.role.name }} (Assigned at: {{ assignment.assigned_at }})
+                        </li>
+                    {% empty %}
+                        <li class="list-item">No role assignments.</li>
+                    {% endfor %}
+                </ul>
+            </section>
 
-
+            {% if url == 'community_index' %}
+                <a href="{% url 'create_room' slug=community.slug %}" class="create-room-btn">Create Room</a>
+            {% endif %}
+        </main>
+    </div>
 </body>
 </html>

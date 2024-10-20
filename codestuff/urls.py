@@ -9,7 +9,7 @@ from django.conf.urls.i18n import i18n_patterns
 
 from . import views
 from .views import UserCommunitiesView, ProfileCreateView, PersonalProfileCreateView, InternProfileCreateView, \
-    ProfileView
+    ProfileView, InternProfileDetailView
 
 urlpatterns = [
     path('', views.LandingImageView.as_view(), name='index'),
@@ -31,7 +31,7 @@ urlpatterns = [
     path('profile/create/', ProfileCreateView.as_view(), name='create_profile'),
     path('profile/create/<str:username>/', ProfileCreateView.as_view(), name='edit_profile'),
     path('personal-profile/create/', PersonalProfileCreateView.as_view(), name='create_personal_profile'),
-    path('intern-profile/create/', InternProfileCreateView.as_view(), name='create_intern_profile'),
+    path('intern_profile/create/', InternProfileCreateView.as_view(), name='create_intern_profile'),
     path('notifications/', views.NotificationListView.as_view(), name='notifications'),
     path('event_list/', views.EventView.as_view(), name='event_list'),
     path('community/join/<uuid:invite_token>/', views.join_community, name='community_invite'),
@@ -44,8 +44,7 @@ urlpatterns = [
     path('news_list/', views.NewsView.as_view(), name='news_list'),
     path('singlenews/<slug:slug>/', views.SingleNewsView.as_view(), name='singlenews'),
     path('send_friend_request/', views.send_friend_request, name='send_friend_request'),
-    path('intern-profiles/', views.InternProfileCreateView.as_view(), name='intern_profiles_list'),
-    path('intern-profile/<int:pk>/', views.intern_profile_detail, name='intern_profile_detail'),
+    path('intern_profile/<str:username>/', views.InternProfileDetailView.as_view(), name='intern_profile_detail'),
     path('similar-profiles/', views.find_similar_profiles, name='similar-profiles'),
     path('soughtprofile/<int:pk>/', views.profile_detail, name='soughtprofile'),  # Optional detail view
     path('personal_profile_form/', views.PersonalProfileCreateView.as_view(), name='personal_profile_form'),  # Optional detail view
