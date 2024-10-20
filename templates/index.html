@@ -13,7 +13,66 @@
             background-size: cover; /* Cover the entire background */
             background-position: center; /* Center the image */
             background-repeat: no-repeat; /* Prevent repeating the image */
-        }
+            overflow: hidden; /* Prevents scrolling during animation */
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.animated-text {
+    font-size: 50px;
+    color: rgba(255, 255, 255, 0.7);
+    text-shadow: 2px 2px rgba(0, 0, 0, 0.7);
+    position: relative; /* Position relative for animation */
+    opacity: 0; /* Start hidden */
+    transform: translateX(-100%); /* Start from left off-screen */
+    animation: slideIn 4s forwards; /* Animation lasting 4 seconds */
+}
+
+@keyframes slideIn {
+    0% {
+        transform: translateX(-100%); /* Start from the left */
+        opacity: 0; /* Hidden */
+    }
+    50% {
+        opacity: 1; /* Fade in */
+        transform: translateX(50vw); /* Move towards the middle */
+    }
+    100% {
+        transform: translateX(0); /* Centered */
+        opacity: 1; /* Fully visible */
+    }
+}
+
+.animated-text2 {
+    font-size: 100px;
+    color: rgba(255, 255, 255, 0.7);
+    text-shadow: 2px 2px rgba(0, 0, 0, 0.7);
+    position: relative; /* Position relative for animation */
+    opacity: 0; /* Start hidden */
+    transform: translateX(100%); /* Start from right off-screen */
+    animation: slideInFromRight 4s forwards; /* Animation lasting 4 seconds */
+}
+
+@keyframes slideInFromRight {
+    0% {
+        transform: translateX(100%); /* Start from the right */
+        opacity: 0; /* Hidden */
+    }
+    50% {
+        opacity: 1; /* Fade in */
+        transform: translateX(-50vw); /* Move towards the middle */
+    }
+    100% {
+        transform: translateX(0); /* Centered */
+        opacity: 1; /* Fully visible */
+    }
+}
+
     </style>
 </head>
 <body>
@@ -73,14 +132,34 @@
         </ul>
     </nav>
 
-<h1 style="margin-left: auto; margin-right: auto; font-size: 100px; color: rgba(255, 255, 255, 0.7); text-shadow: 2px 2px rgba(0, 0, 0, 0.7); display: flex;"><i>ResuMeet</i></h1>
+<div class="container">
+    <h1 class="animated-text"><i>I'm Sleepy My Brain Is Not Working</i></h1>
+</div>
+
 <br>
 <br>
 <br>
 <br>
 <br>
-    <h3 style="margin-left: auto; margin-right: auto; font-size: 50px; color: rgba(255, 255, 255, 0.7); text-shadow: 2px 2px rgba(0, 0, 0, 0.7); margin-top: 20%; display: flex;"><i>I'm Sleepy My Brain Is Not Working</i></h3>
-    <ul>
+  <h3 class="animated-text2" style="margin-left: auto; margin-right: auto; font-size: 50px; color: rgba(255, 255, 255, 0.7); text-shadow: 2px 2px rgba(0, 0, 0, 0.7); margin-top: 20%; display: flex;">
+    <i>ResuMeet</i>
+</h3>    <ul>
     </ul>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+    const text = document.querySelector('.animated-text');
+    text.classList.remove('animated-text'); // Remove class to restart animation
+    void text.offsetWidth; // Trigger reflow to reset the animation
+    text.classList.add('animated-text'); // Re-add class to start animation
+});
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const text = document.querySelector('.animated-text2');
+        text.classList.remove('animated-text2'); // Remove class to restart animation
+        void text.offsetWidth; // Trigger reflow to reset the animation
+        text.classList.add('animated-text2'); // Re-add class to start animation
+    });
+    </script>
 </body>
 </html>
