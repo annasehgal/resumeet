@@ -23,29 +23,46 @@
     height: 100vh;
 }
 
-.animated-text {
-    font-size: 50px;
-    color: rgba(255, 255, 255, 0.7);
-    text-shadow: 2px 2px rgba(0, 0, 0, 0.7);
-    position: relative; /* Position relative for animation */
-    opacity: 0; /* Start hidden */
-    transform: translateX(-100%); /* Start from left off-screen */
-    animation: slideIn 4s forwards; /* Animation lasting 4 seconds */
-}
-
-@keyframes slideIn {
+@keyframes slideInFromLeft {
     0% {
         transform: translateX(-100%); /* Start from the left */
         opacity: 0; /* Hidden */
     }
     50% {
         opacity: 1; /* Fade in */
-        transform: translateX(50vw); /* Move towards the middle */
+        transform: translateX(50%); /* Move towards the middle */
     }
     100% {
-        transform: translateX(0); /* Centered */
+        transform: translateX(50%); /* Move closer to center */
         opacity: 1; /* Fully visible */
     }
+}
+
+.animated-text {
+    font-size: 45px;
+    color: rgba(255, 255, 255, 0.7);
+    text-shadow: 2px 2px rgba(0, 0, 0, 0.7);
+    position: relative; /* Position relative for animation */
+    opacity: 0; /* Start hidden */
+    transform: translateX(-100%); /* Start from left off-screen */
+    animation: slideInFromLeft 4s forwards; /* Animation lasting 4 seconds */
+}
+
+
+@keyframes slideInFromRight {
+    0% {
+        transform: translateX(100%); /* Start from the right */
+        opacity: 0; /* Hidden */
+    }
+    50% {
+        opacity: 1; /* Fade in */
+        transform: translateX(-50%); /* Move towards the middle */
+    }
+    100% {
+        transform: translateX(-25%); /* Move closer to center */
+        opacity: 1; /* Fully visible */
+    }
+
 }
 
 .animated-text2 {
@@ -56,21 +73,6 @@
     opacity: 0; /* Start hidden */
     transform: translateX(100%); /* Start from right off-screen */
     animation: slideInFromRight 4s forwards; /* Animation lasting 4 seconds */
-}
-
-@keyframes slideInFromRight {
-    0% {
-        transform: translateX(100%); /* Start from the right */
-        opacity: 0; /* Hidden */
-    }
-    50% {
-        opacity: 1; /* Fade in */
-        transform: translateX(-50vw); /* Move towards the middle */
-    }
-    100% {
-        transform: translateX(0); /* Centered */
-        opacity: 1; /* Fully visible */
-    }
 }
 
     </style>
