@@ -118,12 +118,13 @@
         <ul class="event-list">
             {% for event in Events %}
                 <li class="event-item">
-                    <h3>{{ event.title }}</h3>
+                    <h3>{{ event.event }}</h3>
+                    <h3>{{ event.host }}</h3>
                     <p>{{ event.description }}</p>
                     {% if event.newprofile_profile_picture_url %}
                         <img src="{{ event.newprofile_profile_picture_url }}" alt="{{ event.title }} Profile Picture">
                     {% endif %}
-                    <a href="{{ event.newprofile_profile_url }}" class="profile-link">View Profile</a>
+                    <a href="{{ event.newprofile_profile_url }}" class="profile-link">View Event</a>
                 </li>
             {% empty %}
                 <li class="no-events">No events available at the moment. Check back soon!</li>

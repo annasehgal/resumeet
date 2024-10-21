@@ -29,6 +29,13 @@ ALLOWED_HOSTS = []
 
 
 # Application definition
+CORS_ALLOWED_ORIGINS = [
+    "https://example.com",
+    "https://sub.example.com",
+    "http://localhost:8080",
+    "http://127.0.0.1:8000",
+    "http://127.0.0.1:9000",
+]
 
 INSTALLED_APPS = [
     'admin_interface',
@@ -43,6 +50,7 @@ INSTALLED_APPS = [
     'codestuff',
     'crispy_forms',
     "guest_user",
+    'corsheaders',
     'widget_tweaks',
     "guest_user.contrib.allauth",
     'changelogs',
@@ -54,8 +62,9 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.locale.LocaleMiddleware',  # Add this line
-    'django.middleware.common.CommonMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',

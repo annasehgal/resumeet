@@ -1,3 +1,4 @@
+import json
 from datetime import datetime, timedelta
 from venv import logger
 
@@ -15,10 +16,11 @@ from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import FormMixin, CreateView
 
+from .RtcTokenBuilder import Role_Attendee
 from .models import Message, FriendRequest, Friend, Subscription, PersonalProfile, \
     InternProfile, Notification, Event, About, SupportEmail, LandingImage, \
     DefaultAvatar, NewsLetter  # Adjust the import path if necessary
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.checks import messages
@@ -45,6 +47,10 @@ from django.contrib.auth.decorators import login_required
 from datetime import date
 from .models import PersonalProfile
 from django.db.models import Q
+
+from .RtcTokenBuilder import RtcTokenBuilder, Role_Attendee
+from pusher import Pusher
+
 
 @require_http_methods(["GET", "POST"])
 def getMessages(request, slug, room):
@@ -455,7 +461,7 @@ class FriendSearchResultsView(ListView):
 
 
 def signup_success(request):
-    return render(request, 'signup_success.html')
+    return render(request, 'profile.html')
 
 
 class ProfileView(DetailView):
@@ -617,7 +623,7 @@ class EventView(ListView):
         context['Profiles'] = newprofile
 
         for newprofile in context['Profiles']:
-            user = newprofile.user
+            user = newprofile.host
             profile = Profile.objects.filter(user=user).first()
             if profile:
                 newprofile.newprofile_profile_picture_url = profile.avatar.url
@@ -861,7 +867,6 @@ class ContactSuccessView(TemplateView):
         context = super().get_context_data(kwargs)
         context["Contact"] = "2123123123123"
         return context
-
 
 
 class LandingImageView(ListView):
@@ -1116,3 +1121,66 @@ def profile_detail(request, pk):
     return render(request, 'soughtprofile.html', {'profile': profile})
 
 
+# Instantiate a Pusher Client
+pusher_client = Pusher(app_id='1883217',
+                       key=os.environ.get('PUSHER_KEY'),
+                       secret=os.environ.get('PUSHER_SECRET'),
+                       ssl=True,
+                       cluster=os.environ.get('PUSHER_CLUSTER')
+                       )
+
+
+@login_required(login_url='/admin/')
+def index(request):
+    User = get_user_model()
+    all_users = User.objects.exclude(id=request.user.id).only('id', 'username')
+    return render(request, 'agora/index.html', {'allUsers': all_users})
+
+
+def pusher_auth(request):
+    payload = pusher_client.authenticate(
+        channel=request.POST['channel_name'],
+        socket_id=request.POST['socket_id'],
+        custom_data={
+            'user_id': request.user.id,
+            'user_info': {
+                'id': request.user.id,
+                'name': request.user.username
+            }
+        })
+    return JsonResponse(payload)
+
+
+def generate_agora_token(request):
+    appID = os.environ.get('AGORA_APP_ID')
+    appCertificate = os.environ.get('AGORA_APP_CERTIFICATE')
+    channelName = json.loads(request.body.decode(
+        'utf-8'))['channelName']
+    userAccount = request.user.username
+    expireTimeInSeconds = 3600
+    currentTimestamp = int(time.time())
+    privilegeExpiredTs = currentTimestamp + expireTimeInSeconds
+
+    token = RtcTokenBuilder.buildTokenWithAccount(
+        appID, appCertificate, channelName, userAccount, Role_Attendee, privilegeExpiredTs)
+
+    return JsonResponse({'token': token, 'appID': appID})
+
+
+def call_user(request):
+    body = json.loads(request.body.decode('utf-8'))
+
+    user_to_call = body['user_to_call']
+    channel_name = body['channel_name']
+    caller = request.user.id
+
+    pusher_client.trigger(
+        'presence-online-channel',
+        'make-agora-call',
+        {
+            'userToCall': user_to_call,
+            'channelName': channel_name,
+            'from': caller
+        }
+    )
+    return JsonResponse({'message': 'call has been placed'})

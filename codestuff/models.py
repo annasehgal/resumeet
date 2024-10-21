@@ -664,6 +664,7 @@ class Friend(models.Model):
 
 class Event(models.Model):
     event = models.CharField(max_length=200)
+    description = models.CharField(max_length=1000)
     host = models.ForeignKey(User, on_delete=models.CASCADE)
     participants = models.ManyToManyField(User, related_name='participant')
     is_active = models.IntegerField(
@@ -673,6 +674,11 @@ class Event(models.Model):
         choices=((1, 'Active'), (0, 'Inactive')),
         verbose_name="Set active?"
     )
+
+    def get_profile_url(self):
+        profile = Profile.objects.filter(user=self.host).first()
+        if profile:
+            return reverse('profile', args=[str(profile.pk)])
 
 
 class NotificationType(models.Model):

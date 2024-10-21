@@ -49,6 +49,9 @@ urlpatterns = [
     path('soughtprofile/<int:pk>/', views.profile_detail, name='soughtprofile'),  # Optional detail view
     path('personal_profile_form/', views.PersonalProfileCreateView.as_view(), name='personal_profile_form'),  # Optional detail view
 
+    path('pusher/auth/', views.pusher_auth, name='agora-pusher-auth'),
+    path('token/', views.generate_agora_token, name='agora-token'),
+    path('call-user/', views.call_user, name='agora-call-user'),
 
     path('friend_request/<int:request_id>/<str:action>/', views.manage_friend_request, name='manage_friend_request'),
 

@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from .models import Major, Keywords, PersonalProfile, Profile, InternProfile, Room, NewsLetter, Subscription, \
-    LandingImage, Community, Message, Friend, FriendRequest, Notification
+    LandingImage, Community, Message, Friend, FriendRequest, Notification, Event
 
 admin.site.register(Major)
 admin.site.register(Keywords)
@@ -9,6 +9,7 @@ admin.site.register(PersonalProfile)
 admin.site.register(Profile)
 admin.site.register(InternProfile)
 admin.site.register(NewsLetter)
+admin.site.register(Event)
 admin.site.register(Subscription)
 admin.site.register(Message)
 admin.site.register(Friend)

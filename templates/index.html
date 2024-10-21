@@ -193,18 +193,26 @@
             </li>
             <li class="navbar-item">
                 {% if user.is_authenticated %}
-                    <a href="{% url 'profile' username=user.username %}" class="navbar-link">Profile</a>
+                    <a href="{% url 'profile' username=user.username %}" class="navbar-link">{{user.username}}'s Profile</a>
                 {% else %}
                     <a href="{% url 'login' %}" class="navbar-link">Login</a>
                 {% endif %}
             </li>
+                {% if user.is_authenticated %}
+ <li class="navbar-item">
+                <a href="{% url 'logout' %}" style="text-decoration: none; color: white;" class="navbar-link">
+                    <i class="fas fa-user-plus" class="navbar-link"></i>
+                    <span style="color: white; text-decoration: none !important; underline: none;">Log Out</span>
+                </a>
+            </li>
+                          {% else %}
             <li class="navbar-item">
                 <a href="{% url 'signup' %}" style="text-decoration: none; color: white;" class="navbar-link">
                     <i class="fas fa-user-plus" class="navbar-link"></i>
                     <span style="color: white; text-decoration: none !important; underline: none;">Sign Up</span>
                 </a>
             </li>
-
+         {% endif %}
             <!-- <li class="navbar-item"><a href="#" class="navbar-link">About</a></li> -->
             <!-- <li class="navbar-item"><a href="#" class="navbar-link">Contact</a></li> -->
         </ul>
